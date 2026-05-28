@@ -1,3 +1,5 @@
+ℹ️ **Интерактивная веб-инструкция:** [Открыть гайд в браузере](https://lyverance.github.io/Disable-Defender/defender_guide_ru.html)
+
 [English Version](README.md) | Русская версия
 
 # 🛡️ Чистое отключение Windows Defender
