@@ -1,3 +1,5 @@
+ℹ️ **Interactive Web Guide:** [Open guide in browser](https://lyverance.github.io/Disable-Defender/defender_guide_en.html)
+
 [Русская версия](README_RU.md) | English Version
 
 # 🛡️ Clean Windows Defender Disable
