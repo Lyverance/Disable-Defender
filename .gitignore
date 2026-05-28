@@ -1,0 +1,8 @@
+# Windows
+Thumbs.db
+desktop.ini
+*.Zone.Identifier
+
+# Editors
+.vscode/
+.cursor/
