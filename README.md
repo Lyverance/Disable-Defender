@@ -12,9 +12,9 @@ Tested on Windows 11 IoT Enterprise 25H2.
 
 ---
 
-## ❓ Why not Defender Killer and similar tools
+## ❓ Why not Defender Remover and similar tools
 
-Tools like Defender Killer physically remove components from `WinSxS`. After that, cumulative Windows updates fail with error `0x800f081f`, and rollback is only possible by reinstalling the system.
+Tools like Defender Remover physically remove components from `WinSxS`. After that, cumulative Windows updates fail with error `0x800f081f`, and rollback is only possible by reinstalling the system.
 
 This method disables Defender through the registry — the system stays intact, updates keep working, rollback is one script and a reboot.
 
