@@ -70,6 +70,18 @@ Double-click `Check-Status.bat` — a report on the current state of all Defende
 
 ---
 
+### 📺 Video Demonstration
+
+<video src="https://github.com/user-attachments/assets/541749fa-534f-434f-ba78-cacbd6a5c3c2" controls autoplay loop muted max-width="100%"></video>
+
+#### 🕒 Video Timeline & Workflow:
+<ul>
+  <li><a href="javascript:void(0)" onclick="document.getElementById('demo-video').currentTime=0;">0:00</a> — <b>Core Execution:</b> Running <code>Disable-Defender.cmd</code>.</li>
+  <li><a href="javascript:void(0)" onclick="document.getElementById('demo-video').currentTime=49;">0:49</a> — <b>Restoration Demo:</b> Running <code>Restore-Defender.cmd</code>.</li>
+</ul>
+
+---
+
 ## 📋 What gets disabled
 
 | Component | Method |
