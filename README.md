@@ -6,7 +6,7 @@
 
 A native, safe, and fully reversible method to disable Windows Defender — no third-party software required.
 
-Tested on Windows 11 IoT Enterprise 25H2.
+Tested on Windows 11 IoT Enterprise 25H2 / Pro 25H2.
 
 > ⚠️ **I'm not a professional system software developer.** This method and scripts were developed and tested on my own system. The logic and automation code are my own; LLM assistants were used for code formatting, HTML guide layout, and English translation. Shared as-is — if you repeat this on your system, you do so at your own risk.
 
