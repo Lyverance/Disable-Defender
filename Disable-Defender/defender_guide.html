@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Windows Defender Management — Guide</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#1a1a18;font-family:'Courier New',Courier,monospace;padding:2rem 1rem;min-height:100vh}
+.wrap{max-width:880px;margin:0 auto}
+
+.header{margin-bottom:2rem;padding-bottom:1.25rem;border-bottom:1px solid #2C2C2A}
+.badge{display:inline-block;font-size:11px;font-weight:700;padding:3px 10px;border-radius:4px;letter-spacing:.05em;margin-bottom:.75rem;font-family:Arial,sans-serif}
+.badge-warn{background:#FAEEDA;color:#633806}
+.badge-info{background:#E6F1FB;color:#0C447C}
+.badge-ok{background:#EAF3DE;color:#27500A}
+.badge-danger{background:#FCEBEB;color:#791F1F}
+h1{font-size:22px;font-weight:700;color:#D3D1C7;font-family:Arial,sans-serif;margin-bottom:.5rem}
+.subtitle{font-size:13px;color:#888780;font-family:Arial,sans-serif;line-height:1.7}
+
+.section{margin-bottom:2rem}
+.section-header{display:flex;align-items:center;gap:10px;margin-bottom:1rem;padding:10px 14px;border-radius:6px;border:1px solid #3C3489;background:#26215C}
+.section-num{font-size:14px;font-weight:700;font-family:Arial,sans-serif;color:#CECBF6;min-width:20px}
+.section-title{font-size:15px;font-weight:700;color:#EEEDFE;font-family:Arial,sans-serif;flex:1}
+
+.step{margin-bottom:1.25rem;padding:14px 16px;background:#222220;border:1px solid #3C3434;border-radius:6px}
+.step-label{font-size:11px;font-weight:700;font-family:Arial,sans-serif;color:#888780;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.5rem;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.step-title{font-size:14px;font-weight:700;font-family:Arial,sans-serif;color:#D3D1C7;margin-bottom:.5rem}
+.step-desc{font-size:13px;font-family:Arial,sans-serif;color:#888780;line-height:1.65;margin-bottom:.75rem}
+.step-desc strong{color:#B4B2A9}
+
+.mode-pill{display:inline-flex;align-items:center;gap:4px;padding:2px 9px;border-radius:10px;font-size:11px;font-family:Arial,sans-serif;font-weight:700;letter-spacing:.03em}
+.mode-normal{background:#1B3A10;color:#9FE1CB;border:1px solid #27500A}
+.mode-safe{background:#3A1010;color:#F09595;border:1px solid #791F1F}
+.mode-regedit{background:#2A1A40;color:#C9A8F5;border:1px solid #6B3FA0}
+
+.code-block{border-radius:6px;overflow:hidden;border:1px solid #3C3434;margin-bottom:.5rem}
+.code-header{display:flex;align-items:center;justify-content:space-between;padding:7px 14px;background:#2C2C2A;font-size:11px;font-family:Arial,sans-serif;color:#888780;letter-spacing:.04em}
+.shell-type{display:flex;align-items:center;gap:7px;font-weight:700}
+.shell-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.dot-ps{background:#5B8FD4}
+.dot-cmd{background:#D4A55B}
+.dot-reg{background:#A855D4}
+pre{background:#111110;padding:16px 18px;overflow-x:auto;font-size:13px;line-height:1.85;color:#D3D1C7;white-space:pre}
+
+.c-comment{color:#4A4A48;font-style:italic}
+.c-cmd{color:#7EC8A4}
+.c-val{color:#FAC775}
+.c-kw{color:#B58AE8}
+.c-str{color:#F0997B}
+.c-flag{color:#9FE1CB}
+.c-param{color:#D4537E}
+.c-path{color:#C9A8F5}
+
+.copy-btn{cursor:pointer;padding:4px 10px;border:1px solid #444441;border-radius:4px;background:transparent;color:#888780;font-size:10px;font-family:Arial,sans-serif;font-weight:700;letter-spacing:.04em;transition:all .15s}
+.copy-btn:hover{background:#3C3489;border-color:#534AB7;color:#CECBF6}
+
+.note{display:flex;gap:10px;padding:10px 14px;border-radius:6px;margin-bottom:.85rem;font-size:13px;font-family:Arial,sans-serif;line-height:1.65}
+.note-warn{background:#2A1E08;border:1px solid #854F0B;color:#FAC775}
+.note-info{background:#082030;border:1px solid #185FA5;color:#85B7EB}
+.note-ok{background:#0F2A08;border:1px solid #27500A;color:#9FE1CB}
+.note-icon{font-size:15px;flex-shrink:0;margin-top:1px}
+.note strong{color:inherit;font-weight:700}
+code{background:#2C2C2A;padding:1px 5px;border-radius:3px;font-size:12px;color:#FAC775;font-family:'Courier New',monospace}
+
+.regedit-steps{counter-reset:rstep;list-style:none;margin:.5rem 0 .75rem 0}
+.regedit-steps li{counter-increment:rstep;display:flex;gap:10px;padding:7px 0;border-bottom:1px solid #2C2C2A;font-size:13px;font-family:Arial,sans-serif;color:#888780;line-height:1.6}
+.regedit-steps li:last-child{border-bottom:none}
+.regedit-steps li::before{content:counter(rstep);min-width:20px;height:20px;background:#3C3489;color:#CECBF6;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;margin-top:1px}
+.regedit-steps li strong{color:#B4B2A9}
+
+.divider{height:1px;background:#2C2C2A;margin:2rem 0}
+
+.legend{padding:14px 18px;background:#222220;border-radius:6px;border:1px solid #3C3434}
+.legend-title{font-size:13px;font-weight:700;font-family:Arial,sans-serif;color:#D3D1C7;margin-bottom:.6rem}
+.legend-grid{display:flex;flex-wrap:wrap;gap:10px 20px}
+.legend-item{display:flex;align-items:center;gap:6px;font-size:12px;font-family:Arial,sans-serif;color:#888780}
+.legend-dot{width:10px;height:10px;border-radius:2px;flex-shrink:0}
+
+.footer{margin-top:2rem;padding-top:1rem;border-top:1px solid #2C2C2A;font-size:12px;font-family:Arial,sans-serif;color:#444441;text-align:center}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="badge badge-warn">&#9673; Windows Defender Management</div>
+    <h1>Fully disabling Defender without breaking system integrity</h1>
+    <p class="subtitle">
+      Tested on Windows 11 Enterprise IoT 25H2 (build 26200.x).
+    </p>
+  </div>
+
+  <!-- ===== PART 1 ===== -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">1</span>
+      <span class="section-title">Fully disabling Windows Defender</span>
+    </div>
+
+    <!-- Step 1.0 -->
+    <div class="step">
+      <div class="step-label">
+        <span class="mode-pill mode-normal">&#9654; Normal Mode</span>
+        &nbsp;Step 1.0 — Must be done first
+      </div>
+      <div class="step-title">Disable Tamper Protection</div>
+      <div class="step-desc">
+        <strong>This is a mandatory zero step.</strong> Tamper Protection blocks changes to Defender scheduler tasks and EPP registry keys even for Administrators — the commands in steps 1.1 and 1.4 will execute without errors, but the changes will not stick or will be silently reverted.<br>
+        It can only be disabled via the GUI — doing it through the registry or Group Policy is not possible while the protection is enabled.
+      </div>
+      <ol class="regedit-steps">
+        <li>Open <strong>Settings</strong> (Win + I) → <strong>Privacy &amp; security</strong> → <strong>Windows Security</strong> → <strong>Virus &amp; threat protection</strong></li>
+        <li>Scroll down to <strong>"Virus &amp; threat protection settings"</strong> → click <strong>"Manage settings"</strong></li>
+        <li>Find the <strong>"Tamper Protection"</strong> toggle → switch it <strong>Off</strong> → confirm in the UAC prompt</li>
+      </ol>
+    </div>
+
+    <!-- Step 1.1 -->
+    <div class="step">
+      <div class="step-label">
+        <span class="mode-pill mode-normal">&#9654; Normal Mode</span>
+        &nbsp;Step 1.1
+      </div>
+      <div class="step-title">Disable scheduler tasks, notifications, and SmartScreen</div>
+      <div class="step-desc">
+        Open <strong>PowerShell as Administrator</strong> (Win + X → Terminal (Administrator)) and run the entire block at once.<br>
+        No reboot needed — changes take effect immediately.<br>
+        <strong>Also note the default value of WdNisDrv</strong> — you will need it for rollback: <code>sc qc WdNisDrv</code> → look at the START_TYPE line. On most builds this is <code>2</code> (AUTO_START), on some editions — <code>3</code> (DEMAND_START).
+      </div>
+      <div class="code-block">
+        <div class="code-header">
+          <span class="shell-type"><span class="shell-dot dot-ps"></span> PowerShell (Administrator)</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre><span class="c-comment"># Disable Defender scheduler tasks</span>
+<span class="c-cmd">Disable-ScheduledTask</span> <span class="c-flag">-TaskPath</span> <span class="c-str">"\Microsoft\Windows\Windows Defender\"</span> <span class="c-flag">-TaskName</span> <span class="c-val">"Windows Defender Cache Maintenance"</span>
+<span class="c-cmd">Disable-ScheduledTask</span> <span class="c-flag">-TaskPath</span> <span class="c-str">"\Microsoft\Windows\Windows Defender\"</span> <span class="c-flag">-TaskName</span> <span class="c-val">"Windows Defender Cleanup"</span>
+<span class="c-cmd">Disable-ScheduledTask</span> <span class="c-flag">-TaskPath</span> <span class="c-str">"\Microsoft\Windows\Windows Defender\"</span> <span class="c-flag">-TaskName</span> <span class="c-val">"Windows Defender Scheduled Scan"</span>
+<span class="c-cmd">Disable-ScheduledTask</span> <span class="c-flag">-TaskPath</span> <span class="c-str">"\Microsoft\Windows\Windows Defender\"</span> <span class="c-flag">-TaskName</span> <span class="c-val">"Windows Defender Verification"</span>
+
+<span class="c-comment"># Disable "Enable security service" toast (AccountHealth)</span>
+<span class="c-cmd">Disable-ScheduledTask</span> <span class="c-flag">-TaskPath</span> <span class="c-str">"\Microsoft\Windows\AccountHealth\"</span> <span class="c-flag">-TaskName</span> <span class="c-val">"RecoverabilityToastTask"</span>
+
+<span class="c-comment"># Disable "Enable Security Center service" tray notifications</span>
+<span class="c-cmd">reg add</span> <span class="c-str">"HKLM\SOFTWARE\Microsoft\Security Center"</span> <span class="c-flag">/v</span> <span class="c-val">AntiVirusDisableNotify</span> <span class="c-flag">/t</span> <span class="c-kw">REG_DWORD</span> <span class="c-flag">/d</span> <span class="c-param">1</span> <span class="c-flag">/f</span>
+<span class="c-cmd">reg add</span> <span class="c-str">"HKLM\SOFTWARE\Microsoft\Security Center"</span> <span class="c-flag">/v</span> <span class="c-val">AntiVirusOverride</span>       <span class="c-flag">/t</span> <span class="c-kw">REG_DWORD</span> <span class="c-flag">/d</span> <span class="c-param">1</span> <span class="c-flag">/f</span>
+<span class="c-cmd">reg add</span> <span class="c-str">"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Notifications\Settings\Windows.SystemToast.SecurityAndMaintenance"</span> <span class="c-flag">/v</span> <span class="c-val">Enabled</span> <span class="c-flag">/t</span> <span class="c-kw">REG_DWORD</span> <span class="c-flag">/d</span> <span class="c-param">0</span> <span class="c-flag">/f</span>
+
+<span class="c-comment"># Disable SmartScreen</span>
+<span class="c-cmd">reg add</span> <span class="c-str">"HKLM\SOFTWARE\Policies\Microsoft\Windows\System"</span>                     <span class="c-flag">/v</span> <span class="c-val">EnableSmartScreen</span>         <span class="c-flag">/t</span> <span class="c-kw">REG_DWORD</span> <span class="c-flag">/d</span> <span class="c-param">0</span>   <span class="c-flag">/f</span>
+<span class="c-cmd">reg add</span> <span class="c-str">"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer"</span>               <span class="c-flag">/v</span> <span class="c-val">SmartScreenEnabled</span>        <span class="c-flag">/t</span> <span class="c-kw">REG_SZ</span>    <span class="c-flag">/d</span> <span class="c-str">Off</span> <span class="c-flag">/f</span>
+<span class="c-cmd">reg add</span> <span class="c-str">"HKCU\Software\Microsoft\Windows\CurrentVersion\AppHost"</span>                <span class="c-flag">/v</span> <span class="c-val">EnableWebContentEvaluation</span> <span class="c-flag">/t</span> <span class="c-kw">REG_DWORD</span> <span class="c-flag">/d</span> <span class="c-param">0</span>   <span class="c-flag">/f</span></pre>
+      </div>
+    </div>
+
+    <!-- Step 1.2 -->
+    <div class="step">
+      <div class="step-label">
+        <span class="mode-pill mode-normal">&#9654; Normal Mode</span>
+        &nbsp;Step 1.2
+      </div>
+      <div class="step-title">Remove SecurityHealth from startup and boot into Safe Mode</div>
+      <div class="step-desc">
+        In the same <strong>PowerShell as Administrator</strong>, run the block.<br>
+        After execution the system will reboot into Safe Mode — continue from step 1.3.
+      </div>
+      <div class="note note-info">
+        <span class="note-icon">&#9432;</span>
+        <span><strong>Why Safe Mode?</strong> Tamper Protection blocks changes to Defender service registry keys even for Administrators in normal mode. In Safe Mode this protection does not load. Scheduler tasks, notifications, and SmartScreen are not protected by Tamper Protection — they are disabled in normal mode (step 1.1). EPP context menu entries are also not protected by Tamper Protection, but are removed in step 1.4 together with the services since they logically belong to the same group.</span>
+      </div>
+      <div class="code-block">
+        <div class="code-header">
+          <span class="shell-type"><span class="shell-dot dot-ps"></span> PowerShell (Administrator)</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre><span class="c-comment"># Remove Security Center icon from startup</span>
+<span class="c-cmd">Remove-ItemProperty</span> <span class="c-flag">-Path</span> <span class="c-str">"HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run"</span> `
+                    <span class="c-flag">-Name</span> <span class="c-val">"SecurityHealth"</span> `
+                    <span class="c-flag">-ErrorAction</span> <span class="c-kw">SilentlyContinue</span>
+
+<span class="c-comment"># Enable Safe Mode and reboot</span>
+
+<span class="c-cmd">bcdedit</span> <span class="c-flag">/set</span> <span class="c-str">'{current}'</span> <span class="c-val">safeboot minimal</span>
+<span class="c-cmd">Restart-Computer</span></pre>
+      </div>
+    </div>
+
+    <!-- Step 1.3 -->
+    <div class="step">
+      <div class="step-label">
+        <span class="mode-pill mode-safe">&#9888; Safe Mode</span>
+        <span class="mode-pill mode-regedit">&#9998; regedit</span>
+        &nbsp;Step 1.3 — Start here after reboot
+      </div>
+      <div class="step-title">Grant permissions on protected registry keys (wscsvc and Sense)</div>
+      <div class="step-desc">
+        The registry keys for services <strong>wscsvc</strong> and <strong>Sense</strong> are write-protected even for Administrators — without permissions the commands in step 1.4 will return "Access Denied".<br>
+        First grant permissions on both keys in one pass, then proceed to cmd.
+      </div>
+      <div class="step-desc"><strong>Open regedit:</strong> Win + R → regedit → Enter. For each of the two keys below, follow the same procedure:</div>
+      <div class="code-block">
+        <div class="code-header">
+          <span class="shell-type"><span class="shell-dot dot-reg"></span> regedit paths — grant permissions on both</span>
+        </div>
+        <pre><span class="c-path">HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\wscsvc</span>
+<span class="c-path">HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Sense</span></pre>
+      </div>
+      <div class="step-desc" style="margin-top:.75rem"><strong>Procedure for each key:</strong></div>
+      <ol class="regedit-steps">
+        <li>Right-click the folder → <strong>Permissions</strong> → <strong>Advanced</strong></li>
+        <li>Next to "Owner: SYSTEM" click <strong>Change</strong> → type <strong>Administrators</strong> → Check Names → OK</li>
+        <li>Check <strong>"Replace owner on subcontainers and objects"</strong> → Apply</li>
+        <li>In the permissions list select the <strong>Administrators</strong> row → <strong>Edit</strong> → set type to <strong>Allow</strong> and check <strong>Full Control</strong> → Apply → OK</li>
+      </ol>
+      <div class="step-desc" style="margin-top:.25rem">After granting permissions on both keys — proceed to step 1.4.</div>
+    </div>
+
+    <!-- Step 1.4 -->
+    <div class="step">
+      <div class="step-label">
+        <span class="mode-pill mode-safe">&#9888; Safe Mode</span>
+        &nbsp;Step 1.4
+      </div>
+      <div class="step-title">Disable Defender services and wscsvc via the registry</div>
+      <div class="step-desc">
+        Open <strong>cmd.exe as Administrator</strong> (Win + R → cmd → Ctrl + Shift + Enter) and run the entire block at once.
+      </div>
+      <div class="note note-info">
+        <span class="note-icon">&#9432;</span>
+        <span>Value <code>4</code> = "Disabled" mode. The service will not start at system boot.<br>
+        <strong>About WdBoot:</strong> boot-start driver (type 0). We set <code>Start=4</code>, but with Secure Boot + TPM enabled, ELAM validation may reset it back to <code>0</code>. If after reboot you see <code>Start=0</code> instead of <code>4</code> — this is normal: Defender will still not start as long as <code>WinDefend</code> is disabled.</span>
+      </div>
+      <div class="code-block">
+        <div class="code-header">
+          <span class="shell-type"><span class="shell-dot dot-cmd"></span> cmd.exe (Administrator) — Safe Mode</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre><span class="c-comment">:: [1/6] Disable core Defender services and drivers</span>
+<span class="c-cmd">reg add</span> <span class="c-str">"HKLM\SYSTEM\CurrentControlSet\Services\WinDefend"</span>  <span class="c-flag">/v</span> <span class="c-val">Start</span> <span class="c-flag">/t</span> <span class="c-kw">REG_DWORD</span> <span class="c-flag">/d</span> <span class="c-param">4</span> <span class="c-flag">/f</span>
+<span class="c-cmd">reg add</span> <span class="c-str">"HKLM\SYSTEM\CurrentControlSet\Services\WdFilter"</span>  <span class="c-flag">/v</span> <span class="c-val">Start</span> <span class="c-flag">/t</span> <span class="c-kw">REG_DWORD</span> <span class="c-flag">/d</span> <span class="c-param">4</span> <span class="c-flag">/f</span>
+<span class="c-cmd">reg add</span> <span class="c-str">"HKLM\SYSTEM\CurrentControlSet\Services\WdBoot"</span>   <span class="c-flag">/v</span> <span class="c-val">Start</span> <span class="c-flag">/t</span> <span class="c-kw">REG_DWORD</span> <span class="c-flag">/d</span> <span class="c-param">4</span> <span class="c-flag">/f</span>
+<span class="c-cmd">reg add</span> <span class="c-str">"HKLM\SYSTEM\CurrentControlSet\Services\WdNisSvc"</span> <span class="c-flag">/v</span> <span class="c-val">Start</span> <span class="c-flag">/t</span> <span class="c-kw">REG_DWORD</span> <span class="c-flag">/d</span> <span class="c-param">4</span> <span class="c-flag">/f</span>
+<span class="c-cmd">reg add</span> <span class="c-str">"HKLM\SYSTEM\CurrentControlSet\Services\WdNisDrv"</span> <span class="c-flag">/v</span> <span class="c-val">Start</span> <span class="c-flag">/t</span> <span class="c-kw">REG_DWORD</span> <span class="c-flag">/d</span> <span class="c-param">4</span> <span class="c-flag">/f</span>
+
+<span class="c-comment">:: [2/6] Disable additional services (relevant for Windows 11 25H2)</span>
+<span class="c-cmd">reg add</span> <span class="c-str">"HKLM\SYSTEM\CurrentControlSet\Services\Sense"</span>               <span class="c-flag">/v</span> <span class="c-val">Start</span> <span class="c-flag">/t</span> <span class="c-kw">REG_DWORD</span> <span class="c-flag">/d</span> <span class="c-param">4</span> <span class="c-flag">/f</span>
+<span class="c-cmd">reg add</span> <span class="c-str">"HKLM\SYSTEM\CurrentControlSet\Services\webthreatdefsvc"</span>       <span class="c-flag">/v</span> <span class="c-val">Start</span> <span class="c-flag">/t</span> <span class="c-kw">REG_DWORD</span> <span class="c-flag">/d</span> <span class="c-param">4</span> <span class="c-flag">/f</span>
+<span class="c-cmd">reg add</span> <span class="c-str">"HKLM\SYSTEM\CurrentControlSet\Services\webthreatdefusersvc"</span>   <span class="c-flag">/v</span> <span class="c-val">Start</span> <span class="c-flag">/t</span> <span class="c-kw">REG_DWORD</span> <span class="c-flag">/d</span> <span class="c-param">4</span> <span class="c-flag">/f</span>
+
+<span class="c-comment">:: [3/6] Hide Security Center shield from tray</span>
+<span class="c-cmd">reg add</span> <span class="c-str">"HKLM\SOFTWARE\Policies\Microsoft\Windows Defender Security Center\Systray"</span> <span class="c-flag">/v</span> <span class="c-val">HideSystray</span> <span class="c-flag">/t</span> <span class="c-kw">REG_DWORD</span> <span class="c-flag">/d</span> <span class="c-param">1</span> <span class="c-flag">/f</span>
+
+<span class="c-comment">:: [4/6] Suppress Health Center</span>
+<span class="c-cmd">reg add</span> <span class="c-str">"HKLM\SOFTWARE\Policies\Microsoft\Windows\HealthCenter"</span> <span class="c-flag">/v</span> <span class="c-val">DisableHealthCenter</span> <span class="c-flag">/t</span> <span class="c-kw">REG_DWORD</span> <span class="c-flag">/d</span> <span class="c-param">1</span> <span class="c-flag">/f</span>
+
+<span class="c-comment">:: [5/6] Remove EPP from Explorer context menu</span>
+<span class="c-cmd">reg delete</span> <span class="c-str">"HKLM\SOFTWARE\Classes\*\shellex\ContextMenuHandlers\EPP"</span>                  <span class="c-flag">/f</span> 2&gt;nul
+<span class="c-cmd">reg delete</span> <span class="c-str">"HKLM\SOFTWARE\Classes\Drive\shellex\ContextMenuHandlers\EPP"</span>              <span class="c-flag">/f</span> 2&gt;nul
+<span class="c-cmd">reg delete</span> <span class="c-str">"HKLM\SOFTWARE\Classes\Directory\shellex\ContextMenuHandlers\EPP"</span>          <span class="c-flag">/f</span> 2&gt;nul
+<span class="c-cmd">reg delete</span> <span class="c-str">"HKLM\SOFTWARE\Classes\Directory\Background\shellex\ContextMenuHandlers\EPP"</span> <span class="c-flag">/f</span> 2&gt;nul
+<span class="c-cmd">reg delete</span> <span class="c-str">"HKLM\SOFTWARE\Classes\Folder\shellex\ContextMenuHandlers\EPP"</span>             <span class="c-flag">/f</span> 2&gt;nul
+
+<span class="c-comment">:: [6/6] Block smartscreen.exe from running (process appears in Task Manager even with SmartScreen disabled)</span>
+<span class="c-cmd">takeown</span> <span class="c-flag">/f</span> <span class="c-str">"%SystemRoot%\System32\smartscreen.exe"</span> <span class="c-flag">/a</span>
+<span class="c-cmd">icacls</span> <span class="c-str">"%SystemRoot%\System32\smartscreen.exe"</span> <span class="c-flag">/deny</span> <span class="c-val">*S-1-5-32-545:(X)</span>
+
+<span class="c-comment">:: [7/7] Disable wscsvc</span>
+<span class="c-cmd">reg add</span> <span class="c-str">"HKLM\SYSTEM\CurrentControlSet\Services\wscsvc"</span> <span class="c-flag">/v</span> <span class="c-val">Start</span> <span class="c-flag">/t</span> <span class="c-kw">REG_DWORD</span> <span class="c-flag">/d</span> <span class="c-param">4</span> <span class="c-flag">/f</span></pre>
+      </div>
+      <div class="step-desc" style="margin-top:.75rem"><strong>After running the block</strong> — exit Safe Mode:</div>
+      <div class="code-block">
+        <div class="code-header">
+          <span class="shell-type"><span class="shell-dot dot-cmd"></span> cmd.exe (Administrator) — Safe Mode</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre><span class="c-cmd">bcdedit</span> <span class="c-flag">/deletevalue</span> {current} safeboot
+<span class="c-cmd">shutdown</span> <span class="c-flag">/r</span> <span class="c-flag">/t</span> <span class="c-param">0</span></pre>
+      </div>
+    </div>
+
+    <!-- Verification -->
+    <div class="step">
+      <div class="step-label">
+        <span class="mode-pill mode-normal">&#9654; Normal Mode</span>
+        &nbsp;Verification
+      </div>
+      <div class="step-title">Confirm everything is disabled</div>
+      <div class="step-desc">Run each block separately in <strong>PowerShell as Administrator</strong>. Expected values are shown in the comments.</div>
+
+      <div class="step-desc"><strong>Step 1.1 — Scheduler tasks, notifications, SmartScreen, startup; Step 1.4 — EPP</strong></div>
+      <div class="code-block">
+        <div class="code-header">
+          <span class="shell-type"><span class="shell-dot dot-ps"></span> PowerShell (Administrator)</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre><span class="c-comment"># Scheduler tasks — all five should show State: Disabled</span>
+<span class="c-cmd">Get-ScheduledTask</span> <span class="c-flag">-TaskPath</span> <span class="c-str">"\Microsoft\Windows\Windows Defender\"</span> | <span class="c-cmd">Select-Object</span> TaskName, State
+<span class="c-cmd">Get-ScheduledTask</span> <span class="c-flag">-TaskPath</span> <span class="c-str">"\Microsoft\Windows\AccountHealth\"</span> <span class="c-flag">-TaskName</span> <span class="c-val">"RecoverabilityToastTask"</span> | <span class="c-cmd">Select-Object</span> TaskName, State
+
+<span class="c-comment"># EPP in context menu — all five commands should return "ERROR: The system was unable to find..."</span>
+<span class="c-cmd">reg query</span> <span class="c-str">"HKLM\SOFTWARE\Classes\*\shellex\ContextMenuHandlers\EPP"</span>
+<span class="c-cmd">reg query</span> <span class="c-str">"HKLM\SOFTWARE\Classes\Drive\shellex\ContextMenuHandlers\EPP"</span>
+<span class="c-cmd">reg query</span> <span class="c-str">"HKLM\SOFTWARE\Classes\Directory\shellex\ContextMenuHandlers\EPP"</span>
+<span class="c-cmd">reg query</span> <span class="c-str">"HKLM\SOFTWARE\Classes\Directory\Background\shellex\ContextMenuHandlers\EPP"</span>
+<span class="c-cmd">reg query</span> <span class="c-str">"HKLM\SOFTWARE\Classes\Folder\shellex\ContextMenuHandlers\EPP"</span>
+
+<span class="c-comment"># Security Center notifications — AntiVirusDisableNotify and AntiVirusOverride should be 0x1</span>
+<span class="c-cmd">reg query</span> <span class="c-str">"HKLM\SOFTWARE\Microsoft\Security Center"</span> <span class="c-flag">/v</span> <span class="c-val">AntiVirusDisableNotify</span>
+<span class="c-cmd">reg query</span> <span class="c-str">"HKLM\SOFTWARE\Microsoft\Security Center"</span> <span class="c-flag">/v</span> <span class="c-val">AntiVirusOverride</span>
+
+<span class="c-comment"># SecurityAndMaintenance toast — Enabled should be 0x0</span>
+<span class="c-cmd">reg query</span> <span class="c-str">"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Notifications\Settings\Windows.SystemToast.SecurityAndMaintenance"</span> <span class="c-flag">/v</span> <span class="c-val">Enabled</span>
+
+<span class="c-comment"># SmartScreen — EnableSmartScreen should be 0x0, SmartScreenEnabled should be "Off", EnableWebContentEvaluation should be 0x0</span>
+<span class="c-cmd">reg query</span> <span class="c-str">"HKLM\SOFTWARE\Policies\Microsoft\Windows\System"</span> <span class="c-flag">/v</span> <span class="c-val">EnableSmartScreen</span>
+<span class="c-cmd">reg query</span> <span class="c-str">"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer"</span> <span class="c-flag">/v</span> <span class="c-val">SmartScreenEnabled</span>
+<span class="c-cmd">reg query</span> <span class="c-str">"HKCU\Software\Microsoft\Windows\CurrentVersion\AppHost"</span> <span class="c-flag">/v</span> <span class="c-val">EnableWebContentEvaluation</span>
+
+<span class="c-comment"># smartscreen.exe — deny ACL for Users should be present</span>
+<span class="c-cmd">icacls</span> <span class="c-str">"%SystemRoot%\System32\smartscreen.exe"</span>
+
+<span class="c-comment"># SecurityHealth startup — key should NOT exist (error = expected)</span>
+<span class="c-cmd">reg query</span> <span class="c-str">"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run"</span> <span class="c-flag">/v</span> <span class="c-val">SecurityHealth</span></pre>
+      </div>
+
+      <div class="step-desc" style="margin-top:.75rem"><strong>Steps 1.3 and 1.4 — Services</strong></div>
+      <div class="code-block">
+        <div class="code-header">
+          <span class="shell-type"><span class="shell-dot dot-ps"></span> PowerShell (Administrator)</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre><span class="c-comment"># Services — all should show Status: Stopped, StartType: Disabled</span>
+<span class="c-cmd">Get-Service</span> <span class="c-val">WinDefend</span>, <span class="c-val">WdFilter</span>, <span class="c-val">WdNisSvc</span>, <span class="c-val">WdNisDrv</span>, <span class="c-val">Sense</span>, <span class="c-val">webthreatdefsvc</span>, <span class="c-val">webthreatdefusersvc</span>, <span class="c-val">wscsvc</span> |
+  <span class="c-cmd">Select-Object</span> Name, Status, StartType
+
+<span class="c-comment"># Security Center tray — HideSystray should be 0x1</span>
+<span class="c-cmd">reg query</span> <span class="c-str">"HKLM\SOFTWARE\Policies\Microsoft\Windows Defender Security Center\Systray"</span> <span class="c-flag">/v</span> <span class="c-val">HideSystray</span>
+
+<span class="c-comment"># Health Center — DisableHealthCenter should be 0x1</span>
+<span class="c-cmd">reg query</span> <span class="c-str">"HKLM\SOFTWARE\Policies\Microsoft\Windows\HealthCenter"</span> <span class="c-flag">/v</span> <span class="c-val">DisableHealthCenter</span></pre>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="note note-warn">
+    <span class="note-icon">&#9432;</span>
+    <span>
+      <strong>Major Windows updates (Feature Updates)</strong> may restore Defender services to their original state. After such an update it is recommended to run the checks from the "Verification" section and if necessary repeat steps 1.3–1.4.<br>
+      Regular cumulative updates (Cumulative Updates) do not affect the services.
+    </span>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ===== PART 2 ===== -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">2</span>
+      <span class="section-title">Restoring Windows Defender (full rollback)</span>
+    </div>
+
+    <!-- Step 2.1 -->
+    <div class="step">
+      <div class="step-label">
+        <span class="mode-pill mode-normal">&#9654; Normal Mode</span>
+        &nbsp;Step 2.1
+      </div>
+      <div class="step-title">Re-enable scheduler tasks, restore notifications, EPP, and SecurityHealth startup</div>
+      <div class="step-desc">
+        Open <strong>cmd.exe as Administrator</strong> and run the block. No reboot needed.
+      </div>
+      <div class="code-block">
+        <div class="code-header">
+          <span class="shell-type"><span class="shell-dot dot-cmd"></span> cmd.exe (Administrator)</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre><span class="c-comment">:: Re-enable Defender scheduler tasks</span>
+<span class="c-cmd">schtasks</span> /Change /TN <span class="c-str">"Microsoft\Windows\Windows Defender\Windows Defender Cache Maintenance"</span> /Enable
+<span class="c-cmd">schtasks</span> /Change /TN <span class="c-str">"Microsoft\Windows\Windows Defender\Windows Defender Cleanup"</span>           /Enable
+<span class="c-cmd">schtasks</span> /Change /TN <span class="c-str">"Microsoft\Windows\Windows Defender\Windows Defender Scheduled Scan"</span>    /Enable
+<span class="c-cmd">schtasks</span> /Change /TN <span class="c-str">"Microsoft\Windows\Windows Defender\Windows Defender Verification"</span>      /Enable
+<span class="c-cmd">schtasks</span> /Change /TN <span class="c-str">"Microsoft\Windows\AccountHealth\RecoverabilityToastTask"</span>               /Enable
+
+<span class="c-comment">:: Restore Security Center notifications</span>
+<span class="c-cmd">reg delete</span> <span class="c-str">"HKLM\SOFTWARE\Microsoft\Security Center"</span> <span class="c-flag">/v</span> <span class="c-val">AntiVirusDisableNotify</span> <span class="c-flag">/f</span> 2&gt;nul
+<span class="c-cmd">reg delete</span> <span class="c-str">"HKLM\SOFTWARE\Microsoft\Security Center"</span> <span class="c-flag">/v</span> <span class="c-val">AntiVirusOverride</span>       <span class="c-flag">/f</span> 2&gt;nul
+<span class="c-cmd">reg delete</span> <span class="c-str">"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Notifications\Settings\Windows.SystemToast.SecurityAndMaintenance"</span> <span class="c-flag">/v</span> <span class="c-val">Enabled</span> <span class="c-flag">/f</span> 2&gt;nul
+<span class="c-cmd">reg delete</span> <span class="c-str">"HKLM\SOFTWARE\Policies\Microsoft\Windows\System"</span>           <span class="c-flag">/v</span> <span class="c-val">EnableSmartScreen</span>         <span class="c-flag">/f</span> 2&gt;nul
+<span class="c-cmd">reg delete</span> <span class="c-str">"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer"</span>   <span class="c-flag">/v</span> <span class="c-val">SmartScreenEnabled</span>        <span class="c-flag">/f</span> 2&gt;nul
+<span class="c-cmd">reg delete</span> <span class="c-str">"HKCU\Software\Microsoft\Windows\CurrentVersion\AppHost"</span>    <span class="c-flag">/v</span> <span class="c-val">EnableWebContentEvaluation</span> <span class="c-flag">/f</span> 2&gt;nul
+
+<span class="c-comment">:: Restore permissions on smartscreen.exe</span>
+<span class="c-cmd">takeown</span> <span class="c-flag">/f</span> <span class="c-str">"%SystemRoot%\System32\smartscreen.exe"</span> <span class="c-flag">/a</span>
+<span class="c-cmd">icacls</span> <span class="c-str">"%SystemRoot%\System32\smartscreen.exe"</span> <span class="c-flag">/remove:d</span> <span class="c-val">*S-1-5-32-545</span>
+
+<span class="c-comment">:: Restore EPP to Explorer context menu</span>
+<span class="c-comment">:: CLSID {09A47860-11B0-4DA5-AFA5-26D86198A780} = ShellExtension for MpShe.dll</span>
+<span class="c-cmd">reg add</span> <span class="c-str">"HKLM\SOFTWARE\Classes\*\shellex\ContextMenuHandlers\EPP"</span>                  <span class="c-flag">/ve</span> <span class="c-flag">/d</span> <span class="c-str">"{09A47860-11B0-4DA5-AFA5-26D86198A780}"</span> <span class="c-flag">/f</span>
+<span class="c-cmd">reg add</span> <span class="c-str">"HKLM\SOFTWARE\Classes\Drive\shellex\ContextMenuHandlers\EPP"</span>              <span class="c-flag">/ve</span> <span class="c-flag">/d</span> <span class="c-str">"{09A47860-11B0-4DA5-AFA5-26D86198A780}"</span> <span class="c-flag">/f</span>
+<span class="c-cmd">reg add</span> <span class="c-str">"HKLM\SOFTWARE\Classes\Directory\shellex\ContextMenuHandlers\EPP"</span>          <span class="c-flag">/ve</span> <span class="c-flag">/d</span> <span class="c-str">"{09A47860-11B0-4DA5-AFA5-26D86198A780}"</span> <span class="c-flag">/f</span>
+<span class="c-cmd">reg add</span> <span class="c-str">"HKLM\SOFTWARE\Classes\Directory\Background\shellex\ContextMenuHandlers\EPP"</span> <span class="c-flag">/ve</span> <span class="c-flag">/d</span> <span class="c-str">"{09A47860-11B0-4DA5-AFA5-26D86198A780}"</span> <span class="c-flag">/f</span>
+<span class="c-cmd">reg add</span> <span class="c-str">"HKLM\SOFTWARE\Classes\Folder\shellex\ContextMenuHandlers\EPP"</span>             <span class="c-flag">/ve</span> <span class="c-flag">/d</span> <span class="c-str">"{09A47860-11B0-4DA5-AFA5-26D86198A780}"</span> <span class="c-flag">/f</span>
+
+<span class="c-comment">:: Restore Security Center icon to startup</span>
+<span class="c-cmd">reg add</span> <span class="c-str">"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run"</span> <span class="c-flag">/v</span> <span class="c-val">SecurityHealth</span> <span class="c-flag">/t</span> <span class="c-kw">REG_EXPAND_SZ</span> <span class="c-flag">/d</span> <span class="c-str">"%windir%\System32\SecurityHealthSystray.exe"</span> <span class="c-flag">/f</span></pre>
+      </div>
+    </div>
+
+    <!-- Step 2.2 -->
+    <div class="step">
+      <div class="step-label">
+        <span class="mode-pill mode-normal">&#9654; Normal Mode</span>
+        &nbsp;Step 2.2
+      </div>
+      <div class="step-title">Boot into Safe Mode</div>
+      <div class="step-desc">
+        In the same <strong>cmd.exe as Administrator</strong> run the block. After execution the system will reboot into Safe Mode — continue from step 2.3.
+      </div>
+      <div class="code-block">
+        <div class="code-header">
+          <span class="shell-type"><span class="shell-dot dot-cmd"></span> cmd.exe (Administrator)</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre><span class="c-cmd">bcdedit</span> <span class="c-flag">/set</span> {current} safeboot minimal
+<span class="c-cmd">shutdown</span> <span class="c-flag">/r</span> <span class="c-flag">/t</span> <span class="c-param">0</span></pre>
+      </div>
+    </div>
+
+    <!-- Step 2.3 -->
+    <div class="step">
+      <div class="step-label">
+        <span class="mode-pill mode-safe">&#9888; Safe Mode</span>
+        &nbsp;Step 2.3
+      </div>
+      <div class="step-title">Restore services via the registry</div>
+      <div class="step-desc">
+        Open <strong>cmd.exe as Administrator</strong> in Safe Mode and run the block.<br>
+        <strong>Do not reboot yet</strong> — first restore ownership of wscsvc and Sense via regedit (see below), and only then enter the exit commands.
+      </div>
+      <div class="note note-info">
+        <span class="note-icon">&#9432;</span>
+        <span>Default values: <code>WinDefend = 2</code> (auto), <code>WdFilter = 2</code> (auto), <code>WdBoot = 0</code> (boot-start), <code>WdNisSvc = 3</code> (manual), <code>WdNisDrv = 2</code> (auto on most builds; substitute your own value if it differs — you checked it in step 1.1).<br>
+        <strong>About WdBoot:</strong> the default value is <code>Start=0</code> (boot-start). With Secure Boot + TPM enabled, ELAM validation may reset it back to <code>0</code> even if you set it manually to something else — this is normal and has no effect on system operation.</span>
+      </div>
+      <div class="code-block">
+        <div class="code-header">
+          <span class="shell-type"><span class="shell-dot dot-cmd"></span> cmd.exe (Administrator) — Safe Mode</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre><span class="c-comment">:: [1/3] Restore default parameters for all Defender services</span>
+<span class="c-cmd">reg add</span> <span class="c-str">"HKLM\SYSTEM\CurrentControlSet\Services\WinDefend"</span>           <span class="c-flag">/v</span> <span class="c-val">Start</span> <span class="c-flag">/t</span> <span class="c-kw">REG_DWORD</span> <span class="c-flag">/d</span> <span class="c-param">2</span> <span class="c-flag">/f</span>
+<span class="c-cmd">reg add</span> <span class="c-str">"HKLM\SYSTEM\CurrentControlSet\Services\WdFilter"</span>           <span class="c-flag">/v</span> <span class="c-val">Start</span> <span class="c-flag">/t</span> <span class="c-kw">REG_DWORD</span> <span class="c-flag">/d</span> <span class="c-param">2</span> <span class="c-flag">/f</span>
+<span class="c-cmd">reg add</span> <span class="c-str">"HKLM\SYSTEM\CurrentControlSet\Services\WdBoot"</span>            <span class="c-flag">/v</span> <span class="c-val">Start</span> <span class="c-flag">/t</span> <span class="c-kw">REG_DWORD</span> <span class="c-flag">/d</span> <span class="c-param">0</span> <span class="c-flag">/f</span>
+<span class="c-cmd">reg add</span> <span class="c-str">"HKLM\SYSTEM\CurrentControlSet\Services\WdNisSvc"</span>          <span class="c-flag">/v</span> <span class="c-val">Start</span> <span class="c-flag">/t</span> <span class="c-kw">REG_DWORD</span> <span class="c-flag">/d</span> <span class="c-param">3</span> <span class="c-flag">/f</span>
+<span class="c-comment">:: WdNisDrv: default value on most builds = 2; if yours was different — substitute your own (check beforehand: sc qc WdNisDrv)</span>
+<span class="c-cmd">reg add</span> <span class="c-str">"HKLM\SYSTEM\CurrentControlSet\Services\WdNisDrv"</span>          <span class="c-flag">/v</span> <span class="c-val">Start</span> <span class="c-flag">/t</span> <span class="c-kw">REG_DWORD</span> <span class="c-flag">/d</span> <span class="c-param">2</span> <span class="c-flag">/f</span>
+<span class="c-cmd">reg add</span> <span class="c-str">"HKLM\SYSTEM\CurrentControlSet\Services\Sense"</span>              <span class="c-flag">/v</span> <span class="c-val">Start</span> <span class="c-flag">/t</span> <span class="c-kw">REG_DWORD</span> <span class="c-flag">/d</span> <span class="c-param">3</span> <span class="c-flag">/f</span>
+<span class="c-cmd">reg add</span> <span class="c-str">"HKLM\SYSTEM\CurrentControlSet\Services\webthreatdefsvc"</span>    <span class="c-flag">/v</span> <span class="c-val">Start</span> <span class="c-flag">/t</span> <span class="c-kw">REG_DWORD</span> <span class="c-flag">/d</span> <span class="c-param">3</span> <span class="c-flag">/f</span>
+<span class="c-cmd">reg add</span> <span class="c-str">"HKLM\SYSTEM\CurrentControlSet\Services\webthreatdefusersvc"</span> <span class="c-flag">/v</span> <span class="c-val">Start</span> <span class="c-flag">/t</span> <span class="c-kw">REG_DWORD</span> <span class="c-flag">/d</span> <span class="c-param">2</span> <span class="c-flag">/f</span>
+<span class="c-cmd">reg add</span> <span class="c-str">"HKLM\SYSTEM\CurrentControlSet\Services\wscsvc"</span>             <span class="c-flag">/v</span> <span class="c-val">Start</span> <span class="c-flag">/t</span> <span class="c-kw">REG_DWORD</span> <span class="c-flag">/d</span> <span class="c-param">2</span> <span class="c-flag">/f</span>
+
+<span class="c-comment">:: [2/3] Restore Security Center tray icon</span>
+<span class="c-cmd">reg delete</span> <span class="c-str">"HKLM\SOFTWARE\Policies\Microsoft\Windows Defender Security Center\Systray"</span> <span class="c-flag">/v</span> <span class="c-val">HideSystray</span> <span class="c-flag">/f</span> 2&gt;nul
+
+<span class="c-comment">:: [3/3] Re-enable Health Center</span>
+<span class="c-cmd">reg delete</span> <span class="c-str">"HKLM\SOFTWARE\Policies\Microsoft\Windows\HealthCenter"</span> <span class="c-flag">/v</span> <span class="c-val">DisableHealthCenter</span> <span class="c-flag">/f</span> 2&gt;nul</pre>
+      </div>
+      <div class="note note-warn">
+        <span class="note-icon">&#9888;</span>
+        <span><strong>Do not close this cmd window.</strong> Make sure all commands above have been executed. Then open regedit and return ownership of wscsvc and Sense back to SYSTEM (instructions below) — the <code>Start</code> values are already set by the <code>reg add</code> commands above, regedit is only needed to restore ownership. Only after that enter the Safe Mode exit commands.</span>
+      </div>
+      <div class="step-desc" style="margin-top:.75rem"><strong>Return ownership via regedit</strong> — Win + R → regedit → for each of the two keys follow the same procedure:</div>
+      <div class="code-block">
+        <div class="code-header">
+          <span class="shell-type"><span class="shell-dot dot-reg"></span> regedit paths — restore ownership on both</span>
+        </div>
+        <pre><span class="c-path">HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\wscsvc</span>
+<span class="c-path">HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Sense</span></pre>
+      </div>
+      <ol class="regedit-steps">
+        <li>Right-click the folder → Permissions → Advanced → Change owner to <strong>SYSTEM</strong> → check "Replace owner on subcontainers and objects" → Apply → OK</li>
+        <li>Close the permissions window — no need to manually restrict Administrators permissions, they will revert to their defaults automatically after ownership is transferred back to SYSTEM</li>
+      </ol>
+      <div class="step-desc"><strong>After that</strong> return to cmd and exit Safe Mode:</div>
+      <div class="code-block">
+        <div class="code-header">
+          <span class="shell-type"><span class="shell-dot dot-cmd"></span> cmd.exe (Administrator) — Safe Mode</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre><span class="c-cmd">bcdedit</span> <span class="c-flag">/deletevalue</span> {current} safeboot
+<span class="c-cmd">shutdown</span> <span class="c-flag">/r</span> <span class="c-flag">/t</span> <span class="c-param">0</span></pre>
+      </div>
+    </div>
+
+    <!-- Step 2.4 -->
+    <div class="step">
+      <div class="step-label">
+        <span class="mode-pill mode-normal">&#9654; Normal Mode</span>
+        &nbsp;Step 2.4 — Final
+      </div>
+      <div class="step-title">Re-enable Tamper Protection</div>
+      <div class="step-desc">
+        Tamper Protection does not restore automatically when services start — it must be enabled manually via the GUI, the same way as in step 1.0.
+      </div>
+      <ol class="regedit-steps">
+        <li>Open <strong>Settings</strong> (Win + I) → <strong>Privacy &amp; security</strong> → <strong>Windows Security</strong> → <strong>Virus &amp; threat protection</strong></li>
+        <li>Scroll down to <strong>"Virus &amp; threat protection settings"</strong> → click <strong>"Manage settings"</strong></li>
+        <li>Find the <strong>"Tamper Protection"</strong> toggle → switch it <strong>On</strong> → confirm in the UAC prompt</li>
+      </ol>
+    </div>
+  </div>
+
+</div>
+<script>
+function copyCode(btn) {
+  const pre = btn.closest('.code-block').querySelector('pre');
+  const text = pre.innerText;
+  navigator.clipboard.writeText(text).then(() => {
+    const orig = btn.textContent;
+    btn.textContent = 'Copied!';
+    btn.style.color = '#9FE1CB';
+    setTimeout(() => { btn.textContent = orig; btn.style.color = ''; }, 1600);
+  });
+}
+</script>
+</body>
+</html>

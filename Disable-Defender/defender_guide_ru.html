@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Управление Windows Defender — Инструкция</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#1a1a18;font-family:'Courier New',Courier,monospace;padding:2rem 1rem;min-height:100vh}
+.wrap{max-width:880px;margin:0 auto}
+
+.header{margin-bottom:2rem;padding-bottom:1.25rem;border-bottom:1px solid #2C2C2A}
+.badge{display:inline-block;font-size:11px;font-weight:700;padding:3px 10px;border-radius:4px;letter-spacing:.05em;margin-bottom:.75rem;font-family:Arial,sans-serif}
+.badge-warn{background:#FAEEDA;color:#633806}
+.badge-info{background:#E6F1FB;color:#0C447C}
+.badge-ok{background:#EAF3DE;color:#27500A}
+.badge-danger{background:#FCEBEB;color:#791F1F}
+h1{font-size:22px;font-weight:700;color:#D3D1C7;font-family:Arial,sans-serif;margin-bottom:.5rem}
+.subtitle{font-size:13px;color:#888780;font-family:Arial,sans-serif;line-height:1.7}
+
+.section{margin-bottom:2rem}
+.section-header{display:flex;align-items:center;gap:10px;margin-bottom:1rem;padding:10px 14px;border-radius:6px;border:1px solid #3C3489;background:#26215C}
+.section-num{font-size:14px;font-weight:700;font-family:Arial,sans-serif;color:#CECBF6;min-width:20px}
+.section-title{font-size:15px;font-weight:700;color:#EEEDFE;font-family:Arial,sans-serif;flex:1}
+
+.step{margin-bottom:1.25rem;padding:14px 16px;background:#222220;border:1px solid #3C3434;border-radius:6px}
+.step-label{font-size:11px;font-weight:700;font-family:Arial,sans-serif;color:#888780;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.5rem;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.step-title{font-size:14px;font-weight:700;font-family:Arial,sans-serif;color:#D3D1C7;margin-bottom:.5rem}
+.step-desc{font-size:13px;font-family:Arial,sans-serif;color:#888780;line-height:1.65;margin-bottom:.75rem}
+.step-desc strong{color:#B4B2A9}
+
+.mode-pill{display:inline-flex;align-items:center;gap:4px;padding:2px 9px;border-radius:10px;font-size:11px;font-family:Arial,sans-serif;font-weight:700;letter-spacing:.03em}
+.mode-normal{background:#1B3A10;color:#9FE1CB;border:1px solid #27500A}
+.mode-safe{background:#3A1010;color:#F09595;border:1px solid #791F1F}
+.mode-regedit{background:#2A1A40;color:#C9A8F5;border:1px solid #6B3FA0}
+
+.code-block{border-radius:6px;overflow:hidden;border:1px solid #3C3434;margin-bottom:.5rem}
+.code-header{display:flex;align-items:center;justify-content:space-between;padding:7px 14px;background:#2C2C2A;font-size:11px;font-family:Arial,sans-serif;color:#888780;letter-spacing:.04em}
+.shell-type{display:flex;align-items:center;gap:7px;font-weight:700}
+.shell-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.dot-ps{background:#5B8FD4}
+.dot-cmd{background:#D4A55B}
+.dot-reg{background:#A855D4}
+pre{background:#111110;padding:16px 18px;overflow-x:auto;font-size:13px;line-height:1.85;color:#D3D1C7;white-space:pre}
+
+.c-comment{color:#4A4A48;font-style:italic}
+.c-cmd{color:#7EC8A4}
+.c-val{color:#FAC775}
+.c-kw{color:#B58AE8}
+.c-str{color:#F0997B}
+.c-flag{color:#9FE1CB}
+.c-param{color:#D4537E}
+.c-path{color:#C9A8F5}
+
+.copy-btn{cursor:pointer;padding:4px 10px;border:1px solid #444441;border-radius:4px;background:transparent;color:#888780;font-size:10px;font-family:Arial,sans-serif;font-weight:700;letter-spacing:.04em;transition:all .15s}
+.copy-btn:hover{background:#3C3489;border-color:#534AB7;color:#CECBF6}
+
+.note{display:flex;gap:10px;padding:10px 14px;border-radius:6px;margin-bottom:.85rem;font-size:13px;font-family:Arial,sans-serif;line-height:1.65}
+.note-warn{background:#2A1E08;border:1px solid #854F0B;color:#FAC775}
+.note-info{background:#082030;border:1px solid #185FA5;color:#85B7EB}
+.note-ok{background:#0F2A08;border:1px solid #27500A;color:#9FE1CB}
+.note-icon{font-size:15px;flex-shrink:0;margin-top:1px}
+.note strong{color:inherit;font-weight:700}
+code{background:#2C2C2A;padding:1px 5px;border-radius:3px;font-size:12px;color:#FAC775;font-family:'Courier New',monospace}
+
+.regedit-steps{counter-reset:rstep;list-style:none;margin:.5rem 0 .75rem 0}
+.regedit-steps li{counter-increment:rstep;display:flex;gap:10px;padding:7px 0;border-bottom:1px solid #2C2C2A;font-size:13px;font-family:Arial,sans-serif;color:#888780;line-height:1.6}
+.regedit-steps li:last-child{border-bottom:none}
+.regedit-steps li::before{content:counter(rstep);min-width:20px;height:20px;background:#3C3489;color:#CECBF6;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;margin-top:1px}
+.regedit-steps li strong{color:#B4B2A9}
+
+.divider{height:1px;background:#2C2C2A;margin:2rem 0}
+
+.legend{padding:14px 18px;background:#222220;border-radius:6px;border:1px solid #3C3434}
+.legend-title{font-size:13px;font-weight:700;font-family:Arial,sans-serif;color:#D3D1C7;margin-bottom:.6rem}
+.legend-grid{display:flex;flex-wrap:wrap;gap:10px 20px}
+.legend-item{display:flex;align-items:center;gap:6px;font-size:12px;font-family:Arial,sans-serif;color:#888780}
+.legend-dot{width:10px;height:10px;border-radius:2px;flex-shrink:0}
+
+.footer{margin-top:2rem;padding-top:1rem;border-top:1px solid #2C2C2A;font-size:12px;font-family:Arial,sans-serif;color:#444441;text-align:center}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="badge badge-warn">&#9673; Управление Windows Defender</div>
+    <h1>Полное отключение Защитника без нарушения целостности системы</h1>
+    <p class="subtitle">
+      Проверено на Windows 11 Enterprise IoT 25H2 (сборка 26200.x).
+    </p>
+  </div>
+
+  <!-- ===== ЧАСТЬ 1 ===== -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">1</span>
+      <span class="section-title">Полное отключение Windows Defender</span>
+    </div>
+
+    <!-- Шаг 1.0 -->
+    <div class="step">
+      <div class="step-label">
+        <span class="mode-pill mode-normal">&#9654; Обычный режим</span>
+        &nbsp;Шаг 1.0 — Обязательно первым
+      </div>
+      <div class="step-title">Отключить Tamper Protection (Защита от несанкционированного доступа)</div>
+      <div class="step-desc">
+        <strong>Это обязательный нулевой шаг.</strong> Tamper Protection блокирует изменения задач планировщика и ключей реестра EPP даже для Администратора — команды шагов 1.1 и 1.4 выполнятся без ошибок, но изменения не закрепятся или будут молча отменены.<br>
+        Отключается только через GUI — через реестр или политику это сделать нельзя при включённой защите.
+      </div>
+      <ol class="regedit-steps">
+        <li>Открыть <strong>Параметры</strong> (Win + I) → <strong>Конфиденциальность и безопасность</strong> → <strong>Безопасность Windows</strong> → <strong>Защита от вирусов и угроз</strong></li>
+        <li>Прокрутить до раздела <strong>«Параметры защиты от вирусов и угроз»</strong> → нажать <strong>«Управление параметрами»</strong></li>
+        <li>Найти переключатель <strong>«Защита от несанкционированного доступа»</strong> → перевести в положение <strong>Откл.</strong> → подтвердить в UAC-запросе</li>
+      </ol>
+    </div>
+
+    <!-- Шаг 1.1 -->
+    <div class="step">
+      <div class="step-label">
+        <span class="mode-pill mode-normal">&#9654; Обычный режим</span>
+        &nbsp;Шаг 1.1
+      </div>
+      <div class="step-title">Отключить задачи планировщика, уведомления и SmartScreen</div>
+      <div class="step-desc">
+        Открыть <strong>PowerShell от Администратора</strong> (Win + X → Терминал (Администратор)) и выполнить блок целиком.<br>
+        Перезагрузка не нужна — изменения вступают в силу сразу.<br>
+        <strong>Заодно запомни заводское значение WdNisDrv</strong> — оно понадобится при откате: <code>sc qc WdNisDrv</code> → смотри строку START_TYPE. На большинстве сборок это <code>2</code> (AUTO_START), на некоторых редакциях — <code>3</code> (DEMAND_START).
+      </div>
+      <div class="code-block">
+        <div class="code-header">
+          <span class="shell-type"><span class="shell-dot dot-ps"></span> PowerShell (Администратор)</span>
+          <button class="copy-btn" onclick="copyCode(this)">Копировать</button>
+        </div>
+        <pre><span class="c-comment"># Отключить задачи планировщика Defender</span>
+<span class="c-cmd">Disable-ScheduledTask</span> <span class="c-flag">-TaskPath</span> <span class="c-str">"\Microsoft\Windows\Windows Defender\"</span> <span class="c-flag">-TaskName</span> <span class="c-val">"Windows Defender Cache Maintenance"</span>
+<span class="c-cmd">Disable-ScheduledTask</span> <span class="c-flag">-TaskPath</span> <span class="c-str">"\Microsoft\Windows\Windows Defender\"</span> <span class="c-flag">-TaskName</span> <span class="c-val">"Windows Defender Cleanup"</span>
+<span class="c-cmd">Disable-ScheduledTask</span> <span class="c-flag">-TaskPath</span> <span class="c-str">"\Microsoft\Windows\Windows Defender\"</span> <span class="c-flag">-TaskName</span> <span class="c-val">"Windows Defender Scheduled Scan"</span>
+<span class="c-cmd">Disable-ScheduledTask</span> <span class="c-flag">-TaskPath</span> <span class="c-str">"\Microsoft\Windows\Windows Defender\"</span> <span class="c-flag">-TaskName</span> <span class="c-val">"Windows Defender Verification"</span>
+
+<span class="c-comment"># Отключить тост «Включить службу безопасности» (AccountHealth)</span>
+<span class="c-cmd">Disable-ScheduledTask</span> <span class="c-flag">-TaskPath</span> <span class="c-str">"\Microsoft\Windows\AccountHealth\"</span> <span class="c-flag">-TaskName</span> <span class="c-val">"RecoverabilityToastTask"</span>
+
+<span class="c-comment"># Отключить уведомления «Включить службу центра безопасности» из трея</span>
+<span class="c-cmd">reg add</span> <span class="c-str">"HKLM\SOFTWARE\Microsoft\Security Center"</span> <span class="c-flag">/v</span> <span class="c-val">AntiVirusDisableNotify</span> <span class="c-flag">/t</span> <span class="c-kw">REG_DWORD</span> <span class="c-flag">/d</span> <span class="c-param">1</span> <span class="c-flag">/f</span>
+<span class="c-cmd">reg add</span> <span class="c-str">"HKLM\SOFTWARE\Microsoft\Security Center"</span> <span class="c-flag">/v</span> <span class="c-val">AntiVirusOverride</span>       <span class="c-flag">/t</span> <span class="c-kw">REG_DWORD</span> <span class="c-flag">/d</span> <span class="c-param">1</span> <span class="c-flag">/f</span>
+<span class="c-cmd">reg add</span> <span class="c-str">"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Notifications\Settings\Windows.SystemToast.SecurityAndMaintenance"</span> <span class="c-flag">/v</span> <span class="c-val">Enabled</span> <span class="c-flag">/t</span> <span class="c-kw">REG_DWORD</span> <span class="c-flag">/d</span> <span class="c-param">0</span> <span class="c-flag">/f</span>
+
+<span class="c-comment"># Отключить SmartScreen</span>
+<span class="c-cmd">reg add</span> <span class="c-str">"HKLM\SOFTWARE\Policies\Microsoft\Windows\System"</span>                     <span class="c-flag">/v</span> <span class="c-val">EnableSmartScreen</span>         <span class="c-flag">/t</span> <span class="c-kw">REG_DWORD</span> <span class="c-flag">/d</span> <span class="c-param">0</span>   <span class="c-flag">/f</span>
+<span class="c-cmd">reg add</span> <span class="c-str">"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer"</span>               <span class="c-flag">/v</span> <span class="c-val">SmartScreenEnabled</span>        <span class="c-flag">/t</span> <span class="c-kw">REG_SZ</span>    <span class="c-flag">/d</span> <span class="c-str">Off</span> <span class="c-flag">/f</span>
+<span class="c-cmd">reg add</span> <span class="c-str">"HKCU\Software\Microsoft\Windows\CurrentVersion\AppHost"</span>                <span class="c-flag">/v</span> <span class="c-val">EnableWebContentEvaluation</span> <span class="c-flag">/t</span> <span class="c-kw">REG_DWORD</span> <span class="c-flag">/d</span> <span class="c-param">0</span>   <span class="c-flag">/f</span></pre>
+      </div>
+    </div>
+
+    <!-- Шаг 1.2 -->
+    <div class="step">
+      <div class="step-label">
+        <span class="mode-pill mode-normal">&#9654; Обычный режим</span>
+        &nbsp;Шаг 1.2
+      </div>
+      <div class="step-title">Убрать SecurityHealth из автозапуска и уйти в Safe Mode</div>
+      <div class="step-desc">
+        В том же <strong>PowerShell от Администратора</strong> выполнить блок.<br>
+        После выполнения система перезагрузится в безопасный режим — продолжение в шаге 1.3.
+      </div>
+      <div class="note note-info">
+        <span class="note-icon">&#9432;</span>
+        <span><strong>Почему Safe Mode?</strong> Tamper Protection блокирует изменения ключей реестра служб Defender даже для Администратора в обычном режиме. В безопасном режиме эта защита не загружается. Задачи планировщика, уведомления и SmartScreen Tamper Protection не защищает — они отключаются в обычном режиме (шаг 1.1). EPP контекстного меню тоже не защищается Tamper Protection, однако удаляется в шаге 1.4 вместе со службами, так как логически относится к той же группе.</span>
+      </div>
+      <div class="code-block">
+        <div class="code-header">
+          <span class="shell-type"><span class="shell-dot dot-ps"></span> PowerShell (Администратор)</span>
+          <button class="copy-btn" onclick="copyCode(this)">Копировать</button>
+        </div>
+        <pre><span class="c-comment"># Убрать иконку Security Center из автозагрузки</span>
+<span class="c-cmd">Remove-ItemProperty</span> <span class="c-flag">-Path</span> <span class="c-str">"HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run"</span> `
+                    <span class="c-flag">-Name</span> <span class="c-val">"SecurityHealth"</span> `
+                    <span class="c-flag">-ErrorAction</span> <span class="c-kw">SilentlyContinue</span>
+
+<span class="c-comment"># Включить безопасный режим и перезагрузиться</span>
+
+<span class="c-cmd">bcdedit</span> <span class="c-flag">/set</span> <span class="c-str">'{current}'</span> <span class="c-val">safeboot minimal</span>
+<span class="c-cmd">Restart-Computer</span></pre>
+      </div>
+    </div>
+
+    <!-- Шаг 1.3 -->
+    <div class="step">
+      <div class="step-label">
+        <span class="mode-pill mode-safe">&#9888; Безопасный режим</span>
+        <span class="mode-pill mode-regedit">&#9998; regedit</span>
+        &nbsp;Шаг 1.3 — Начать отсюда
+      </div>
+      <div class="step-title">Выдать права на защищённые ключи реестра (wscsvc и Sense)</div>
+      <div class="step-desc">
+        Ключи реестра служб <strong>wscsvc</strong> и <strong>Sense</strong> защищены от записи даже для Администратора — без прав команды в шаге 1.4 вернут «Отказано в доступе».<br>
+        Сначала выдаём права на оба ключа за один заход, потом переходим к cmd.
+      </div>
+      <div class="step-desc"><strong>Открыть regedit:</strong> Win + R → regedit → Enter. Для каждого из двух ключей ниже выполнить одинаковую процедуру:</div>
+      <div class="code-block">
+        <div class="code-header">
+          <span class="shell-type"><span class="shell-dot dot-reg"></span> Пути в regedit — выдать права на оба</span>
+        </div>
+        <pre><span class="c-path">HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\wscsvc</span>
+<span class="c-path">HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Sense</span></pre>
+      </div>
+      <div class="step-desc" style="margin-top:.75rem"><strong>Процедура для каждого ключа:</strong></div>
+      <ol class="regedit-steps">
+        <li>Правая кнопка на папке → <strong>Разрешения</strong> → <strong>Дополнительно</strong></li>
+        <li>Напротив «Владелец: СИСТЕМА» нажать <strong>Изменить</strong> → ввести <strong>Администраторы</strong> → Проверить имена → ОК</li>
+        <li>Поставить галку <strong>«Заменить владельца субконтейнеров и объектов»</strong> → Применить</li>
+        <li>В списке разрешений выбрать строку <strong>Администраторы</strong> → <strong>Изменить</strong> → поставить тип <strong>Разрешить</strong> и галку <strong>Полный доступ</strong> → Применить → ОК</li>
+      </ol>
+      <div class="step-desc" style="margin-top:.25rem">После выдачи прав на оба ключа — переходить к шагу 1.4.</div>
+    </div>
+
+    <!-- Шаг 1.4 -->
+    <div class="step">
+      <div class="step-label">
+        <span class="mode-pill mode-safe">&#9888; Безопасный режим</span>
+        &nbsp;Шаг 1.4
+      </div>
+      <div class="step-title">Отключить службы Defender и wscsvc через реестр</div>
+      <div class="step-desc">
+        Открыть <strong>cmd.exe от Администратора</strong> (Win + R → cmd → Ctrl + Shift + Enter) и выполнить блок целиком.
+      </div>
+      <div class="note note-info">
+        <span class="note-icon">&#9432;</span>
+        <span>Значение <code>4</code> = режим «Отключено». Служба не запускается при старте системы.<br>
+        <strong>Про WdBoot:</strong> boot-start драйвер (тип 0). Мы выставляем <code>Start=4</code>, но при включённом Secure Boot + TPM ELAM-валидация может вернуть его к <code>0</code>. Если после перезагрузки видишь <code>Start=0</code> вместо <code>4</code> — это норма: Defender всё равно не запустится, пока отключён <code>WinDefend</code>.</span>
+      </div>
+      <div class="code-block">
+        <div class="code-header">
+          <span class="shell-type"><span class="shell-dot dot-cmd"></span> cmd.exe (Администратор) — Безопасный режим</span>
+          <button class="copy-btn" onclick="copyCode(this)">Копировать</button>
+        </div>
+        <pre><span class="c-comment">:: [1/6] Отключить службы и драйверы ядра Defender</span>
+<span class="c-cmd">reg add</span> <span class="c-str">"HKLM\SYSTEM\CurrentControlSet\Services\WinDefend"</span>  <span class="c-flag">/v</span> <span class="c-val">Start</span> <span class="c-flag">/t</span> <span class="c-kw">REG_DWORD</span> <span class="c-flag">/d</span> <span class="c-param">4</span> <span class="c-flag">/f</span>
+<span class="c-cmd">reg add</span> <span class="c-str">"HKLM\SYSTEM\CurrentControlSet\Services\WdFilter"</span>  <span class="c-flag">/v</span> <span class="c-val">Start</span> <span class="c-flag">/t</span> <span class="c-kw">REG_DWORD</span> <span class="c-flag">/d</span> <span class="c-param">4</span> <span class="c-flag">/f</span>
+<span class="c-cmd">reg add</span> <span class="c-str">"HKLM\SYSTEM\CurrentControlSet\Services\WdBoot"</span>   <span class="c-flag">/v</span> <span class="c-val">Start</span> <span class="c-flag">/t</span> <span class="c-kw">REG_DWORD</span> <span class="c-flag">/d</span> <span class="c-param">4</span> <span class="c-flag">/f</span>
+<span class="c-cmd">reg add</span> <span class="c-str">"HKLM\SYSTEM\CurrentControlSet\Services\WdNisSvc"</span> <span class="c-flag">/v</span> <span class="c-val">Start</span> <span class="c-flag">/t</span> <span class="c-kw">REG_DWORD</span> <span class="c-flag">/d</span> <span class="c-param">4</span> <span class="c-flag">/f</span>
+<span class="c-cmd">reg add</span> <span class="c-str">"HKLM\SYSTEM\CurrentControlSet\Services\WdNisDrv"</span> <span class="c-flag">/v</span> <span class="c-val">Start</span> <span class="c-flag">/t</span> <span class="c-kw">REG_DWORD</span> <span class="c-flag">/d</span> <span class="c-param">4</span> <span class="c-flag">/f</span>
+
+<span class="c-comment">:: [2/6] Отключить дополнительные службы (актуально для Windows 11 25H2)</span>
+<span class="c-cmd">reg add</span> <span class="c-str">"HKLM\SYSTEM\CurrentControlSet\Services\Sense"</span>               <span class="c-flag">/v</span> <span class="c-val">Start</span> <span class="c-flag">/t</span> <span class="c-kw">REG_DWORD</span> <span class="c-flag">/d</span> <span class="c-param">4</span> <span class="c-flag">/f</span>
+<span class="c-cmd">reg add</span> <span class="c-str">"HKLM\SYSTEM\CurrentControlSet\Services\webthreatdefsvc"</span>       <span class="c-flag">/v</span> <span class="c-val">Start</span> <span class="c-flag">/t</span> <span class="c-kw">REG_DWORD</span> <span class="c-flag">/d</span> <span class="c-param">4</span> <span class="c-flag">/f</span>
+<span class="c-cmd">reg add</span> <span class="c-str">"HKLM\SYSTEM\CurrentControlSet\Services\webthreatdefusersvc"</span>   <span class="c-flag">/v</span> <span class="c-val">Start</span> <span class="c-flag">/t</span> <span class="c-kw">REG_DWORD</span> <span class="c-flag">/d</span> <span class="c-param">4</span> <span class="c-flag">/f</span>
+
+<span class="c-comment">:: [3/6] Убрать щит Security Center из трея</span>
+<span class="c-cmd">reg add</span> <span class="c-str">"HKLM\SOFTWARE\Policies\Microsoft\Windows Defender Security Center\Systray"</span> <span class="c-flag">/v</span> <span class="c-val">HideSystray</span> <span class="c-flag">/t</span> <span class="c-kw">REG_DWORD</span> <span class="c-flag">/d</span> <span class="c-param">1</span> <span class="c-flag">/f</span>
+
+<span class="c-comment">:: [4/6] Заглушить Health Center</span>
+<span class="c-cmd">reg add</span> <span class="c-str">"HKLM\SOFTWARE\Policies\Microsoft\Windows\HealthCenter"</span> <span class="c-flag">/v</span> <span class="c-val">DisableHealthCenter</span> <span class="c-flag">/t</span> <span class="c-kw">REG_DWORD</span> <span class="c-flag">/d</span> <span class="c-param">1</span> <span class="c-flag">/f</span>
+
+<span class="c-comment">:: [5/6] Убрать EPP из контекстного меню проводника</span>
+<span class="c-cmd">reg delete</span> <span class="c-str">"HKLM\SOFTWARE\Classes\*\shellex\ContextMenuHandlers\EPP"</span>                  <span class="c-flag">/f</span> 2&gt;nul
+<span class="c-cmd">reg delete</span> <span class="c-str">"HKLM\SOFTWARE\Classes\Drive\shellex\ContextMenuHandlers\EPP"</span>              <span class="c-flag">/f</span> 2&gt;nul
+<span class="c-cmd">reg delete</span> <span class="c-str">"HKLM\SOFTWARE\Classes\Directory\shellex\ContextMenuHandlers\EPP"</span>          <span class="c-flag">/f</span> 2&gt;nul
+<span class="c-cmd">reg delete</span> <span class="c-str">"HKLM\SOFTWARE\Classes\Directory\Background\shellex\ContextMenuHandlers\EPP"</span> <span class="c-flag">/f</span> 2&gt;nul
+<span class="c-cmd">reg delete</span> <span class="c-str">"HKLM\SOFTWARE\Classes\Folder\shellex\ContextMenuHandlers\EPP"</span>             <span class="c-flag">/f</span> 2&gt;nul
+
+<span class="c-comment">:: [6/6] Заблокировать запуск smartscreen.exe (процесс висит в диспетчере задач даже при отключённом SmartScreen)</span>
+<span class="c-cmd">takeown</span> <span class="c-flag">/f</span> <span class="c-str">"%SystemRoot%\System32\smartscreen.exe"</span> <span class="c-flag">/a</span>
+<span class="c-cmd">icacls</span> <span class="c-str">"%SystemRoot%\System32\smartscreen.exe"</span> <span class="c-flag">/deny</span> <span class="c-val">*S-1-5-32-545:(X)</span>
+
+<span class="c-comment">:: [7/7] Отключить wscsvc</span>
+<span class="c-cmd">reg add</span> <span class="c-str">"HKLM\SYSTEM\CurrentControlSet\Services\wscsvc"</span> <span class="c-flag">/v</span> <span class="c-val">Start</span> <span class="c-flag">/t</span> <span class="c-kw">REG_DWORD</span> <span class="c-flag">/d</span> <span class="c-param">4</span> <span class="c-flag">/f</span></pre>
+      </div>
+      <div class="step-desc" style="margin-top:.75rem"><strong>После выполнения блока</strong> — выйти из Safe Mode:</div>
+      <div class="code-block">
+        <div class="code-header">
+          <span class="shell-type"><span class="shell-dot dot-cmd"></span> cmd.exe (Администратор) — Безопасный режим</span>
+          <button class="copy-btn" onclick="copyCode(this)">Копировать</button>
+        </div>
+        <pre><span class="c-cmd">bcdedit</span> <span class="c-flag">/deletevalue</span> {current} safeboot
+<span class="c-cmd">shutdown</span> <span class="c-flag">/r</span> <span class="c-flag">/t</span> <span class="c-param">0</span></pre>
+      </div>
+    </div>
+
+    <!-- Проверка -->
+    <div class="step">
+      <div class="step-label">
+        <span class="mode-pill mode-normal">&#9654; Обычный режим</span>
+        &nbsp;Проверка результата
+      </div>
+      <div class="step-title">Убедиться что всё отключено</div>
+      <div class="step-desc">Выполнить каждый блок по отдельности в <strong>PowerShell от Администратора</strong>. Ожидаемые значения указаны в комментариях.</div>
+
+      <div class="step-desc"><strong>Шаг 1.1 — Задачи планировщика, уведомления, SmartScreen, автозапуск; Шаг 1.4 — EPP</strong></div>
+      <div class="code-block">
+        <div class="code-header">
+          <span class="shell-type"><span class="shell-dot dot-ps"></span> PowerShell (Администратор)</span>
+          <button class="copy-btn" onclick="copyCode(this)">Копировать</button>
+        </div>
+        <pre><span class="c-comment"># Задачи планировщика — все пять должны быть State: Disabled</span>
+<span class="c-cmd">Get-ScheduledTask</span> <span class="c-flag">-TaskPath</span> <span class="c-str">"\Microsoft\Windows\Windows Defender\"</span> | <span class="c-cmd">Select-Object</span> TaskName, State
+<span class="c-cmd">Get-ScheduledTask</span> <span class="c-flag">-TaskPath</span> <span class="c-str">"\Microsoft\Windows\AccountHealth\"</span> <span class="c-flag">-TaskName</span> <span class="c-val">"RecoverabilityToastTask"</span> | <span class="c-cmd">Select-Object</span> TaskName, State
+
+<span class="c-comment"># EPP в контекстном меню — все пять команд должны вернуть "ERROR: The system was unable to find..."</span>
+<span class="c-cmd">reg query</span> <span class="c-str">"HKLM\SOFTWARE\Classes\*\shellex\ContextMenuHandlers\EPP"</span>
+<span class="c-cmd">reg query</span> <span class="c-str">"HKLM\SOFTWARE\Classes\Drive\shellex\ContextMenuHandlers\EPP"</span>
+<span class="c-cmd">reg query</span> <span class="c-str">"HKLM\SOFTWARE\Classes\Directory\shellex\ContextMenuHandlers\EPP"</span>
+<span class="c-cmd">reg query</span> <span class="c-str">"HKLM\SOFTWARE\Classes\Directory\Background\shellex\ContextMenuHandlers\EPP"</span>
+<span class="c-cmd">reg query</span> <span class="c-str">"HKLM\SOFTWARE\Classes\Folder\shellex\ContextMenuHandlers\EPP"</span>
+
+<span class="c-comment"># Уведомления Security Center — AntiVirusDisableNotify и AntiVirusOverride должны быть 0x1</span>
+<span class="c-cmd">reg query</span> <span class="c-str">"HKLM\SOFTWARE\Microsoft\Security Center"</span> <span class="c-flag">/v</span> <span class="c-val">AntiVirusDisableNotify</span>
+<span class="c-cmd">reg query</span> <span class="c-str">"HKLM\SOFTWARE\Microsoft\Security Center"</span> <span class="c-flag">/v</span> <span class="c-val">AntiVirusOverride</span>
+
+<span class="c-comment"># Тост SecurityAndMaintenance — Enabled должен быть 0x0</span>
+<span class="c-cmd">reg query</span> <span class="c-str">"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Notifications\Settings\Windows.SystemToast.SecurityAndMaintenance"</span> <span class="c-flag">/v</span> <span class="c-val">Enabled</span>
+
+<span class="c-comment"># SmartScreen — EnableSmartScreen должен быть 0x0, SmartScreenEnabled должен быть "Off", EnableWebContentEvaluation должен быть 0x0</span>
+<span class="c-cmd">reg query</span> <span class="c-str">"HKLM\SOFTWARE\Policies\Microsoft\Windows\System"</span> <span class="c-flag">/v</span> <span class="c-val">EnableSmartScreen</span>
+<span class="c-cmd">reg query</span> <span class="c-str">"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer"</span> <span class="c-flag">/v</span> <span class="c-val">SmartScreenEnabled</span>
+<span class="c-cmd">reg query</span> <span class="c-str">"HKCU\Software\Microsoft\Windows\CurrentVersion\AppHost"</span> <span class="c-flag">/v</span> <span class="c-val">EnableWebContentEvaluation</span>
+
+<span class="c-comment"># smartscreen.exe — deny-ACL на Users должен присутствовать</span>
+<span class="c-cmd">icacls</span> <span class="c-str">"%SystemRoot%\System32\smartscreen.exe"</span>
+
+<span class="c-comment"># Автозапуск SecurityHealth — ключ НЕ должен существовать (ошибка = норма)</span>
+<span class="c-cmd">reg query</span> <span class="c-str">"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run"</span> <span class="c-flag">/v</span> <span class="c-val">SecurityHealth</span></pre>
+      </div>
+
+      <div class="step-desc" style="margin-top:.75rem"><strong>Шаги 1.3 и 1.4 — Службы</strong></div>
+      <div class="code-block">
+        <div class="code-header">
+          <span class="shell-type"><span class="shell-dot dot-ps"></span> PowerShell (Администратор)</span>
+          <button class="copy-btn" onclick="copyCode(this)">Копировать</button>
+        </div>
+        <pre><span class="c-comment"># Службы — все должны быть Status: Stopped, StartType: Disabled</span>
+<span class="c-cmd">Get-Service</span> <span class="c-val">WinDefend</span>, <span class="c-val">WdFilter</span>, <span class="c-val">WdNisSvc</span>, <span class="c-val">WdNisDrv</span>, <span class="c-val">Sense</span>, <span class="c-val">webthreatdefsvc</span>, <span class="c-val">webthreatdefusersvc</span>, <span class="c-val">wscsvc</span> |
+  <span class="c-cmd">Select-Object</span> Name, Status, StartType
+
+<span class="c-comment"># Трей Security Center — HideSystray должен быть 0x1</span>
+<span class="c-cmd">reg query</span> <span class="c-str">"HKLM\SOFTWARE\Policies\Microsoft\Windows Defender Security Center\Systray"</span> <span class="c-flag">/v</span> <span class="c-val">HideSystray</span>
+
+<span class="c-comment"># Health Center — DisableHealthCenter должен быть 0x1</span>
+<span class="c-cmd">reg query</span> <span class="c-str">"HKLM\SOFTWARE\Policies\Microsoft\Windows\HealthCenter"</span> <span class="c-flag">/v</span> <span class="c-val">DisableHealthCenter</span></pre>
+      </div>
+
+
+    </div>
+  </div>
+
+  <div class="note note-warn">
+    <span class="note-icon">&#9432;</span>
+    <span>
+      <strong>Крупные обновления Windows (Feature Update)</strong> могут вернуть службы Defender в исходное состояние. После такого обновления рекомендуется запустить проверку из раздела «Проверка результата» и при необходимости повторить шаги 1.3–1.4.<br>
+      Обычные накопительные обновления (Cumulative Update) службы не затрагивают.
+    </span>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ===== ЧАСТЬ 2 ===== -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">2</span>
+      <span class="section-title">Восстановление Windows Defender (полный откат)</span>
+    </div>
+
+    <!-- Шаг 2.1 -->
+    <div class="step">
+      <div class="step-label">
+        <span class="mode-pill mode-normal">&#9654; Обычный режим</span>
+        &nbsp;Шаг 2.1
+      </div>
+      <div class="step-title">Включить задачи планировщика, вернуть уведомления, EPP и автозапуск SecurityHealth</div>
+      <div class="step-desc">
+        Открыть <strong>cmd.exe от Администратора</strong> и выполнить блок. Перезагрузка не нужна.
+      </div>
+      <div class="code-block">
+        <div class="code-header">
+          <span class="shell-type"><span class="shell-dot dot-cmd"></span> cmd.exe (Администратор)</span>
+          <button class="copy-btn" onclick="copyCode(this)">Копировать</button>
+        </div>
+        <pre><span class="c-comment">:: Включить задачи планировщика Defender обратно</span>
+<span class="c-cmd">schtasks</span> /Change /TN <span class="c-str">"Microsoft\Windows\Windows Defender\Windows Defender Cache Maintenance"</span> /Enable
+<span class="c-cmd">schtasks</span> /Change /TN <span class="c-str">"Microsoft\Windows\Windows Defender\Windows Defender Cleanup"</span>           /Enable
+<span class="c-cmd">schtasks</span> /Change /TN <span class="c-str">"Microsoft\Windows\Windows Defender\Windows Defender Scheduled Scan"</span>    /Enable
+<span class="c-cmd">schtasks</span> /Change /TN <span class="c-str">"Microsoft\Windows\Windows Defender\Windows Defender Verification"</span>      /Enable
+<span class="c-cmd">schtasks</span> /Change /TN <span class="c-str">"Microsoft\Windows\AccountHealth\RecoverabilityToastTask"</span>               /Enable
+
+<span class="c-comment">:: Вернуть уведомления Security Center</span>
+<span class="c-cmd">reg delete</span> <span class="c-str">"HKLM\SOFTWARE\Microsoft\Security Center"</span> <span class="c-flag">/v</span> <span class="c-val">AntiVirusDisableNotify</span> <span class="c-flag">/f</span> 2&gt;nul
+<span class="c-cmd">reg delete</span> <span class="c-str">"HKLM\SOFTWARE\Microsoft\Security Center"</span> <span class="c-flag">/v</span> <span class="c-val">AntiVirusOverride</span>       <span class="c-flag">/f</span> 2&gt;nul
+<span class="c-cmd">reg delete</span> <span class="c-str">"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Notifications\Settings\Windows.SystemToast.SecurityAndMaintenance"</span> <span class="c-flag">/v</span> <span class="c-val">Enabled</span> <span class="c-flag">/f</span> 2&gt;nul
+<span class="c-cmd">reg delete</span> <span class="c-str">"HKLM\SOFTWARE\Policies\Microsoft\Windows\System"</span>           <span class="c-flag">/v</span> <span class="c-val">EnableSmartScreen</span>         <span class="c-flag">/f</span> 2&gt;nul
+<span class="c-cmd">reg delete</span> <span class="c-str">"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer"</span>   <span class="c-flag">/v</span> <span class="c-val">SmartScreenEnabled</span>        <span class="c-flag">/f</span> 2&gt;nul
+<span class="c-cmd">reg delete</span> <span class="c-str">"HKCU\Software\Microsoft\Windows\CurrentVersion\AppHost"</span>    <span class="c-flag">/v</span> <span class="c-val">EnableWebContentEvaluation</span> <span class="c-flag">/f</span> 2&gt;nul
+
+<span class="c-comment">:: Вернуть права на smartscreen.exe</span>
+<span class="c-cmd">takeown</span> <span class="c-flag">/f</span> <span class="c-str">"%SystemRoot%\System32\smartscreen.exe"</span> <span class="c-flag">/a</span>
+<span class="c-cmd">icacls</span> <span class="c-str">"%SystemRoot%\System32\smartscreen.exe"</span> <span class="c-flag">/remove:d</span> <span class="c-val">*S-1-5-32-545</span>
+
+<span class="c-comment">:: Вернуть EPP в контекстное меню проводника</span>
+<span class="c-comment">:: CLSID {09A47860-11B0-4DA5-AFA5-26D86198A780} = ShellExtension модуля MpShe.dll</span>
+<span class="c-cmd">reg add</span> <span class="c-str">"HKLM\SOFTWARE\Classes\*\shellex\ContextMenuHandlers\EPP"</span>                  <span class="c-flag">/ve</span> <span class="c-flag">/d</span> <span class="c-str">"{09A47860-11B0-4DA5-AFA5-26D86198A780}"</span> <span class="c-flag">/f</span>
+<span class="c-cmd">reg add</span> <span class="c-str">"HKLM\SOFTWARE\Classes\Drive\shellex\ContextMenuHandlers\EPP"</span>              <span class="c-flag">/ve</span> <span class="c-flag">/d</span> <span class="c-str">"{09A47860-11B0-4DA5-AFA5-26D86198A780}"</span> <span class="c-flag">/f</span>
+<span class="c-cmd">reg add</span> <span class="c-str">"HKLM\SOFTWARE\Classes\Directory\shellex\ContextMenuHandlers\EPP"</span>          <span class="c-flag">/ve</span> <span class="c-flag">/d</span> <span class="c-str">"{09A47860-11B0-4DA5-AFA5-26D86198A780}"</span> <span class="c-flag">/f</span>
+<span class="c-cmd">reg add</span> <span class="c-str">"HKLM\SOFTWARE\Classes\Directory\Background\shellex\ContextMenuHandlers\EPP"</span> <span class="c-flag">/ve</span> <span class="c-flag">/d</span> <span class="c-str">"{09A47860-11B0-4DA5-AFA5-26D86198A780}"</span> <span class="c-flag">/f</span>
+<span class="c-cmd">reg add</span> <span class="c-str">"HKLM\SOFTWARE\Classes\Folder\shellex\ContextMenuHandlers\EPP"</span>             <span class="c-flag">/ve</span> <span class="c-flag">/d</span> <span class="c-str">"{09A47860-11B0-4DA5-AFA5-26D86198A780}"</span> <span class="c-flag">/f</span>
+
+<span class="c-comment">:: Вернуть иконку Security Center в автозапуск</span>
+<span class="c-cmd">reg add</span> <span class="c-str">"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run"</span> <span class="c-flag">/v</span> <span class="c-val">SecurityHealth</span> <span class="c-flag">/t</span> <span class="c-kw">REG_EXPAND_SZ</span> <span class="c-flag">/d</span> <span class="c-str">"%windir%\System32\SecurityHealthSystray.exe"</span> <span class="c-flag">/f</span></pre>
+      </div>
+    </div>
+
+    <!-- Шаг 2.2 -->
+    <div class="step">
+      <div class="step-label">
+        <span class="mode-pill mode-normal">&#9654; Обычный режим</span>
+        &nbsp;Шаг 2.2
+      </div>
+      <div class="step-title">Уйти в Safe Mode</div>
+      <div class="step-desc">
+        В том же <strong>cmd.exe от Администратора</strong> выполнить блок. После выполнения система перезагрузится в безопасный режим — продолжение в шаге 2.3.
+      </div>
+      <div class="code-block">
+        <div class="code-header">
+          <span class="shell-type"><span class="shell-dot dot-cmd"></span> cmd.exe (Администратор)</span>
+          <button class="copy-btn" onclick="copyCode(this)">Копировать</button>
+        </div>
+        <pre><span class="c-cmd">bcdedit</span> <span class="c-flag">/set</span> {current} safeboot minimal
+<span class="c-cmd">shutdown</span> <span class="c-flag">/r</span> <span class="c-flag">/t</span> <span class="c-param">0</span></pre>
+      </div>
+    </div>
+
+    <!-- Шаг 2.3 -->
+    <div class="step">
+      <div class="step-label">
+        <span class="mode-pill mode-safe">&#9888; Безопасный режим</span>
+        &nbsp;Шаг 2.3
+      </div>
+      <div class="step-title">Восстановить службы через реестр</div>
+      <div class="step-desc">
+        Открыть <strong>cmd.exe от Администратора</strong> в Safe Mode и выполнить блок.<br>
+        <strong>Не перезагружаться</strong> — сначала восстановить владельца wscsvc и Sense через regedit (ниже), и только потом вводить команды выхода.
+      </div>
+      <div class="note note-info">
+        <span class="note-icon">&#9432;</span>
+        <span>Заводские значения: <code>WinDefend = 2</code> (auto), <code>WdFilter = 2</code> (auto), <code>WdBoot = 0</code> (boot-start), <code>WdNisSvc = 3</code> (manual), <code>WdNisDrv = 2</code> (auto на большинстве сборок; подставь своё если отличается — ты проверял в шаге 1.1).<br>
+        <strong>Про WdBoot:</strong> заводское значение — <code>Start=0</code> (boot-start). При включённом Secure Boot + TPM ELAM-валидация может сбросить его обратно к <code>0</code> даже если вручную выставить иначе — это норма, на работу системы не влияет.</span>
+      </div>
+      <div class="code-block">
+        <div class="code-header">
+          <span class="shell-type"><span class="shell-dot dot-cmd"></span> cmd.exe (Администратор) — Безопасный режим</span>
+          <button class="copy-btn" onclick="copyCode(this)">Копировать</button>
+        </div>
+        <pre><span class="c-comment">:: [1/3] Восстановить заводские параметры всех служб Defender</span>
+<span class="c-cmd">reg add</span> <span class="c-str">"HKLM\SYSTEM\CurrentControlSet\Services\WinDefend"</span>           <span class="c-flag">/v</span> <span class="c-val">Start</span> <span class="c-flag">/t</span> <span class="c-kw">REG_DWORD</span> <span class="c-flag">/d</span> <span class="c-param">2</span> <span class="c-flag">/f</span>
+<span class="c-cmd">reg add</span> <span class="c-str">"HKLM\SYSTEM\CurrentControlSet\Services\WdFilter"</span>           <span class="c-flag">/v</span> <span class="c-val">Start</span> <span class="c-flag">/t</span> <span class="c-kw">REG_DWORD</span> <span class="c-flag">/d</span> <span class="c-param">2</span> <span class="c-flag">/f</span>
+<span class="c-cmd">reg add</span> <span class="c-str">"HKLM\SYSTEM\CurrentControlSet\Services\WdBoot"</span>            <span class="c-flag">/v</span> <span class="c-val">Start</span> <span class="c-flag">/t</span> <span class="c-kw">REG_DWORD</span> <span class="c-flag">/d</span> <span class="c-param">0</span> <span class="c-flag">/f</span>
+<span class="c-cmd">reg add</span> <span class="c-str">"HKLM\SYSTEM\CurrentControlSet\Services\WdNisSvc"</span>          <span class="c-flag">/v</span> <span class="c-val">Start</span> <span class="c-flag">/t</span> <span class="c-kw">REG_DWORD</span> <span class="c-flag">/d</span> <span class="c-param">3</span> <span class="c-flag">/f</span>
+<span class="c-comment">:: WdNisDrv: заводское значение на большинстве сборок = 2; если у вас было иначе — подставьте своё (проверить заранее: sc qc WdNisDrv)</span>
+<span class="c-cmd">reg add</span> <span class="c-str">"HKLM\SYSTEM\CurrentControlSet\Services\WdNisDrv"</span>          <span class="c-flag">/v</span> <span class="c-val">Start</span> <span class="c-flag">/t</span> <span class="c-kw">REG_DWORD</span> <span class="c-flag">/d</span> <span class="c-param">2</span> <span class="c-flag">/f</span>
+<span class="c-cmd">reg add</span> <span class="c-str">"HKLM\SYSTEM\CurrentControlSet\Services\Sense"</span>              <span class="c-flag">/v</span> <span class="c-val">Start</span> <span class="c-flag">/t</span> <span class="c-kw">REG_DWORD</span> <span class="c-flag">/d</span> <span class="c-param">3</span> <span class="c-flag">/f</span>
+<span class="c-cmd">reg add</span> <span class="c-str">"HKLM\SYSTEM\CurrentControlSet\Services\webthreatdefsvc"</span>    <span class="c-flag">/v</span> <span class="c-val">Start</span> <span class="c-flag">/t</span> <span class="c-kw">REG_DWORD</span> <span class="c-flag">/d</span> <span class="c-param">3</span> <span class="c-flag">/f</span>
+<span class="c-cmd">reg add</span> <span class="c-str">"HKLM\SYSTEM\CurrentControlSet\Services\webthreatdefusersvc"</span> <span class="c-flag">/v</span> <span class="c-val">Start</span> <span class="c-flag">/t</span> <span class="c-kw">REG_DWORD</span> <span class="c-flag">/d</span> <span class="c-param">2</span> <span class="c-flag">/f</span>
+<span class="c-cmd">reg add</span> <span class="c-str">"HKLM\SYSTEM\CurrentControlSet\Services\wscsvc"</span>             <span class="c-flag">/v</span> <span class="c-val">Start</span> <span class="c-flag">/t</span> <span class="c-kw">REG_DWORD</span> <span class="c-flag">/d</span> <span class="c-param">2</span> <span class="c-flag">/f</span>
+
+<span class="c-comment">:: [2/3] Вернуть иконку Security Center в трей</span>
+<span class="c-cmd">reg delete</span> <span class="c-str">"HKLM\SOFTWARE\Policies\Microsoft\Windows Defender Security Center\Systray"</span> <span class="c-flag">/v</span> <span class="c-val">HideSystray</span> <span class="c-flag">/f</span> 2&gt;nul
+
+<span class="c-comment">:: [3/3] Включить Health Center обратно</span>
+<span class="c-cmd">reg delete</span> <span class="c-str">"HKLM\SOFTWARE\Policies\Microsoft\Windows\HealthCenter"</span> <span class="c-flag">/v</span> <span class="c-val">DisableHealthCenter</span> <span class="c-flag">/f</span> 2&gt;nul</pre>
+      </div>
+      <div class="note note-warn">
+        <span class="note-icon">&#9888;</span>
+        <span><strong>Не закрывай это окно cmd.</strong> Убедись, что все команды выше выполнены. После этого открой regedit и верни права владельца wscsvc и Sense обратно к СИСТЕМЕ (инструкция ниже) — значения <code>Start</code> уже выставлены командами <code>reg add</code> выше, regedit нужен только для возврата прав. И только после этого вводи команды выхода из Safe Mode.</span>
+      </div>
+      <div class="step-desc" style="margin-top:.75rem"><strong>Вернуть владельца через regedit</strong> — Win + R → regedit → для каждого из двух ключей выполнить одинаковую процедуру:</div>
+      <div class="code-block">
+        <div class="code-header">
+          <span class="shell-type"><span class="shell-dot dot-reg"></span> Пути в regedit — вернуть владельца на оба</span>
+        </div>
+        <pre><span class="c-path">HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\wscsvc</span>
+<span class="c-path">HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Sense</span></pre>
+      </div>
+      <ol class="regedit-steps">
+        <li>Правая кнопка на папке → Разрешения → Дополнительно → Изменить владельца на <strong>СИСТЕМА</strong> → поставить галку «Заменить владельца субконтейнеров и объектов» → Применить → ОК</li>
+        <li>Закрыть окно разрешений — разрешения Администраторам дополнительно урезать не нужно, они вернутся к стандартным автоматически после смены владельца обратно на СИСТЕМА</li>
+      </ol>
+      <div class="step-desc"><strong>После этого</strong> вернуться в cmd и выйти из Safe Mode:</div>
+      <div class="code-block">
+        <div class="code-header">
+          <span class="shell-type"><span class="shell-dot dot-cmd"></span> cmd.exe (Администратор) — Безопасный режим</span>
+          <button class="copy-btn" onclick="copyCode(this)">Копировать</button>
+        </div>
+        <pre><span class="c-cmd">bcdedit</span> <span class="c-flag">/deletevalue</span> {current} safeboot
+<span class="c-cmd">shutdown</span> <span class="c-flag">/r</span> <span class="c-flag">/t</span> <span class="c-param">0</span></pre>
+      </div>
+    </div>
+
+    <!-- Шаг 2.4 -->
+    <div class="step">
+      <div class="step-label">
+        <span class="mode-pill mode-normal">&#9654; Обычный режим</span>
+        &nbsp;Шаг 2.4 — Финальный
+      </div>
+      <div class="step-title">Включить Tamper Protection обратно</div>
+      <div class="step-desc">
+        Tamper Protection не возвращается автоматически при запуске служб — его нужно включить вручную через GUI, как это делалось в шаге 1.0.
+      </div>
+      <ol class="regedit-steps">
+        <li>Открыть <strong>Параметры</strong> (Win + I) → <strong>Конфиденциальность и безопасность</strong> → <strong>Безопасность Windows</strong> → <strong>Защита от вирусов и угроз</strong></li>
+        <li>Прокрутить до раздела <strong>«Параметры защиты от вирусов и угроз»</strong> → нажать <strong>«Управление параметрами»</strong></li>
+        <li>Найти переключатель <strong>«Защита от несанкционированного доступа»</strong> → перевести в положение <strong>Вкл.</strong> → подтвердить в UAC-запросе</li>
+      </ol>
+    </div>
+  </div>
+
+
+</div>
+<script>
+function copyCode(btn) {
+  const pre = btn.closest('.code-block').querySelector('pre');
+  const text = pre.innerText;
+  navigator.clipboard.writeText(text).then(() => {
+    const orig = btn.textContent;
+    btn.textContent = 'Скопировано!';
+    btn.style.color = '#9FE1CB';
+    setTimeout(() => { btn.textContent = orig; btn.style.color = ''; }, 1600);
+  });
+}
+</script>
+</body>
+</html>
