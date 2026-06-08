@@ -149,8 +149,9 @@ code{background:#2C2C2A;padding:1px 5px;border-radius:3px;font-size:12px;color:#
 <span class="c-cmd">reg add</span> <span class="c-str">"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Notifications\Settings\Windows.SystemToast.SecurityAndMaintenance"</span> <span class="c-flag">/v</span> <span class="c-val">Enabled</span> <span class="c-flag">/t</span> <span class="c-kw">REG_DWORD</span> <span class="c-flag">/d</span> <span class="c-param">0</span> <span class="c-flag">/f</span>
 
 <span class="c-comment"># Отключить SmartScreen</span>
-<span class="c-cmd">reg add</span> <span class="c-str">"HKLM\SOFTWARE\Policies\Microsoft\Windows\System"</span>                     <span class="c-flag">/v</span> <span class="c-val">EnableSmartScreen</span>  <span class="c-flag">/t</span> <span class="c-kw">REG_DWORD</span> <span class="c-flag">/d</span> <span class="c-param">0</span> <span class="c-flag">/f</span>
-<span class="c-cmd">reg add</span> <span class="c-str">"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer"</span>               <span class="c-flag">/v</span> <span class="c-val">SmartScreenEnabled</span> <span class="c-flag">/t</span> <span class="c-kw">REG_SZ</span>   <span class="c-flag">/d</span> <span class="c-str">Off</span> <span class="c-flag">/f</span></pre>
+<span class="c-cmd">reg add</span> <span class="c-str">"HKLM\SOFTWARE\Policies\Microsoft\Windows\System"</span>                     <span class="c-flag">/v</span> <span class="c-val">EnableSmartScreen</span>         <span class="c-flag">/t</span> <span class="c-kw">REG_DWORD</span> <span class="c-flag">/d</span> <span class="c-param">0</span>   <span class="c-flag">/f</span>
+<span class="c-cmd">reg add</span> <span class="c-str">"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer"</span>               <span class="c-flag">/v</span> <span class="c-val">SmartScreenEnabled</span>        <span class="c-flag">/t</span> <span class="c-kw">REG_SZ</span>    <span class="c-flag">/d</span> <span class="c-str">Off</span> <span class="c-flag">/f</span>
+<span class="c-cmd">reg add</span> <span class="c-str">"HKCU\Software\Microsoft\Windows\CurrentVersion\AppHost"</span>                <span class="c-flag">/v</span> <span class="c-val">EnableWebContentEvaluation</span> <span class="c-flag">/t</span> <span class="c-kw">REG_DWORD</span> <span class="c-flag">/d</span> <span class="c-param">0</span>   <span class="c-flag">/f</span></pre>
       </div>
     </div>
 
@@ -261,7 +262,11 @@ code{background:#2C2C2A;padding:1px 5px;border-radius:3px;font-size:12px;color:#
 <span class="c-cmd">reg delete</span> <span class="c-str">"HKLM\SOFTWARE\Classes\Directory\Background\shellex\ContextMenuHandlers\EPP"</span> <span class="c-flag">/f</span> 2&gt;nul
 <span class="c-cmd">reg delete</span> <span class="c-str">"HKLM\SOFTWARE\Classes\Folder\shellex\ContextMenuHandlers\EPP"</span>             <span class="c-flag">/f</span> 2&gt;nul
 
-<span class="c-comment">:: [6/6] Отключить wscsvc</span>
+<span class="c-comment">:: [6/6] Заблокировать запуск smartscreen.exe (процесс висит в диспетчере задач даже при отключённом SmartScreen)</span>
+<span class="c-cmd">takeown</span> <span class="c-flag">/f</span> <span class="c-str">"%SystemRoot%\System32\smartscreen.exe"</span> <span class="c-flag">/a</span>
+<span class="c-cmd">icacls</span> <span class="c-str">"%SystemRoot%\System32\smartscreen.exe"</span> <span class="c-flag">/deny</span> <span class="c-val">*S-1-5-32-545:(X)</span>
+
+<span class="c-comment">:: [7/7] Отключить wscsvc</span>
 <span class="c-cmd">reg add</span> <span class="c-str">"HKLM\SYSTEM\CurrentControlSet\Services\wscsvc"</span> <span class="c-flag">/v</span> <span class="c-val">Start</span> <span class="c-flag">/t</span> <span class="c-kw">REG_DWORD</span> <span class="c-flag">/d</span> <span class="c-param">4</span> <span class="c-flag">/f</span></pre>
       </div>
       <div class="step-desc" style="margin-top:.75rem"><strong>После выполнения блока</strong> — выйти из Safe Mode:</div>
@@ -308,9 +313,13 @@ code{background:#2C2C2A;padding:1px 5px;border-radius:3px;font-size:12px;color:#
 <span class="c-comment"># Тост SecurityAndMaintenance — Enabled должен быть 0x0</span>
 <span class="c-cmd">reg query</span> <span class="c-str">"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Notifications\Settings\Windows.SystemToast.SecurityAndMaintenance"</span> <span class="c-flag">/v</span> <span class="c-val">Enabled</span>
 
-<span class="c-comment"># SmartScreen — EnableSmartScreen должен быть 0x0, SmartScreenEnabled должен быть "Off"</span>
+<span class="c-comment"># SmartScreen — EnableSmartScreen должен быть 0x0, SmartScreenEnabled должен быть "Off", EnableWebContentEvaluation должен быть 0x0</span>
 <span class="c-cmd">reg query</span> <span class="c-str">"HKLM\SOFTWARE\Policies\Microsoft\Windows\System"</span> <span class="c-flag">/v</span> <span class="c-val">EnableSmartScreen</span>
 <span class="c-cmd">reg query</span> <span class="c-str">"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer"</span> <span class="c-flag">/v</span> <span class="c-val">SmartScreenEnabled</span>
+<span class="c-cmd">reg query</span> <span class="c-str">"HKCU\Software\Microsoft\Windows\CurrentVersion\AppHost"</span> <span class="c-flag">/v</span> <span class="c-val">EnableWebContentEvaluation</span>
+
+<span class="c-comment"># smartscreen.exe — deny-ACL на Users должен присутствовать</span>
+<span class="c-cmd">icacls</span> <span class="c-str">"%SystemRoot%\System32\smartscreen.exe"</span>
 
 <span class="c-comment"># Автозапуск SecurityHealth — ключ НЕ должен существовать (ошибка = норма)</span>
 <span class="c-cmd">reg query</span> <span class="c-str">"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run"</span> <span class="c-flag">/v</span> <span class="c-val">SecurityHealth</span></pre>
@@ -380,8 +389,13 @@ code{background:#2C2C2A;padding:1px 5px;border-radius:3px;font-size:12px;color:#
 <span class="c-cmd">reg delete</span> <span class="c-str">"HKLM\SOFTWARE\Microsoft\Security Center"</span> <span class="c-flag">/v</span> <span class="c-val">AntiVirusDisableNotify</span> <span class="c-flag">/f</span> 2&gt;nul
 <span class="c-cmd">reg delete</span> <span class="c-str">"HKLM\SOFTWARE\Microsoft\Security Center"</span> <span class="c-flag">/v</span> <span class="c-val">AntiVirusOverride</span>       <span class="c-flag">/f</span> 2&gt;nul
 <span class="c-cmd">reg delete</span> <span class="c-str">"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Notifications\Settings\Windows.SystemToast.SecurityAndMaintenance"</span> <span class="c-flag">/v</span> <span class="c-val">Enabled</span> <span class="c-flag">/f</span> 2&gt;nul
-<span class="c-cmd">reg delete</span> <span class="c-str">"HKLM\SOFTWARE\Policies\Microsoft\Windows\System"</span>           <span class="c-flag">/v</span> <span class="c-val">EnableSmartScreen</span>  <span class="c-flag">/f</span> 2&gt;nul
-<span class="c-cmd">reg delete</span> <span class="c-str">"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer"</span>   <span class="c-flag">/v</span> <span class="c-val">SmartScreenEnabled</span> <span class="c-flag">/f</span> 2&gt;nul
+<span class="c-cmd">reg delete</span> <span class="c-str">"HKLM\SOFTWARE\Policies\Microsoft\Windows\System"</span>           <span class="c-flag">/v</span> <span class="c-val">EnableSmartScreen</span>         <span class="c-flag">/f</span> 2&gt;nul
+<span class="c-cmd">reg delete</span> <span class="c-str">"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer"</span>   <span class="c-flag">/v</span> <span class="c-val">SmartScreenEnabled</span>        <span class="c-flag">/f</span> 2&gt;nul
+<span class="c-cmd">reg delete</span> <span class="c-str">"HKCU\Software\Microsoft\Windows\CurrentVersion\AppHost"</span>    <span class="c-flag">/v</span> <span class="c-val">EnableWebContentEvaluation</span> <span class="c-flag">/f</span> 2&gt;nul
+
+<span class="c-comment">:: Вернуть права на smartscreen.exe</span>
+<span class="c-cmd">takeown</span> <span class="c-flag">/f</span> <span class="c-str">"%SystemRoot%\System32\smartscreen.exe"</span> <span class="c-flag">/a</span>
+<span class="c-cmd">icacls</span> <span class="c-str">"%SystemRoot%\System32\smartscreen.exe"</span> <span class="c-flag">/remove:d</span> <span class="c-val">*S-1-5-32-545</span>
 
 <span class="c-comment">:: Вернуть EPP в контекстное меню проводника</span>
 <span class="c-comment">:: CLSID {09A47860-11B0-4DA5-AFA5-26D86198A780} = ShellExtension модуля MpShe.dll</span>
