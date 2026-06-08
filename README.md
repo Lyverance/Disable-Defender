@@ -1,4 +1,4 @@
-Английская версия | [Russian Version](README_RU.md)
+English Version | [Russian Version](README_RU.md)
 
 # 🛡️ Clean Windows Defender Disable
 
