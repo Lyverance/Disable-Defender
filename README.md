@@ -68,3 +68,6 @@ Double-click `Check-Status.cmd` — a report on the status of all Defender compo
 | **Context Menu** | EPP ("Scan with Microsoft Defender" entry) |
 | **SmartScreen** | Registry + smartscreen.exe block |
 | **Notifications** | Security Center, HealthCenter |
+
+---
+If this was useful, consider leaving a ⭐
