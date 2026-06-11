@@ -257,14 +257,17 @@ if ($defenderOff) {
     Check 'AntiVirusDisableNotify = 1'       (RegValue 'HKLM:\SOFTWARE\Microsoft\Security Center' 'AntiVirusDisableNotify' 1)
     Check 'AntiVirusOverride = 1'            (RegValue 'HKLM:\SOFTWARE\Microsoft\Security Center' 'AntiVirusOverride' 1)
     Check 'SecurityAndMaintenance toast Off' (RegValue 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Notifications\Settings\Windows.SystemToast.SecurityAndMaintenance' 'Enabled' 0)
+    Check 'SecurityAndMaintenance toast Off (user)' (RegValue 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Notifications\Settings\Windows.SystemToast.SecurityAndMaintenance' 'Enabled' 0)
 } else {
     $scBackup     = if ($backup) { $backup.SecurityCenter } else { $null }
-    $avDNBackup   = if ($scBackup) { $scBackup.AntiVirusDisableNotify } else { $null }
-    $avOvBackup   = if ($scBackup) { $scBackup.AntiVirusOverride      } else { $null }
-    $toastBackup  = if ($scBackup) { $scBackup.ToastNotifyEnabled     } else { $null }
-    CheckRestoredDword 'AntiVirusDisableNotify'       'HKLM:\SOFTWARE\Microsoft\Security Center' 'AntiVirusDisableNotify' $avDNBackup
-    CheckRestoredDword 'AntiVirusOverride'            'HKLM:\SOFTWARE\Microsoft\Security Center' 'AntiVirusOverride'      $avOvBackup
-    CheckRestoredDword 'SecurityAndMaintenance toast' 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Notifications\Settings\Windows.SystemToast.SecurityAndMaintenance' 'Enabled' $toastBackup
+    $avDNBackup   = if ($scBackup) { $scBackup.AntiVirusDisableNotify  } else { $null }
+    $avOvBackup   = if ($scBackup) { $scBackup.AntiVirusOverride       } else { $null }
+    $toastBackup  = if ($scBackup) { $scBackup.ToastNotifyEnabled      } else { $null }
+    $toastUserBackup = if ($scBackup) { $scBackup.ToastNotifyEnabledUser } else { $null }
+    CheckRestoredDword 'AntiVirusDisableNotify'              'HKLM:\SOFTWARE\Microsoft\Security Center' 'AntiVirusDisableNotify' $avDNBackup
+    CheckRestoredDword 'AntiVirusOverride'                   'HKLM:\SOFTWARE\Microsoft\Security Center' 'AntiVirusOverride'      $avOvBackup
+    CheckRestoredDword 'SecurityAndMaintenance toast'        'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Notifications\Settings\Windows.SystemToast.SecurityAndMaintenance' 'Enabled' $toastBackup
+    CheckRestoredDword 'SecurityAndMaintenance toast (user)' 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Notifications\Settings\Windows.SystemToast.SecurityAndMaintenance' 'Enabled' $toastUserBackup
 }
 Write-Host ""
 
