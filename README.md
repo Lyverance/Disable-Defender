@@ -24,10 +24,10 @@ This method does not touch a single file — registry only. Updates work normall
 
 ## 📖 Two Ways to Use
 
-ℹ️ **Interactive web guide:** [Open guide in browser](https://lyverance.github.io/Disable-Defender/defender_guide_ru.html)
+ℹ️ **Interactive web guide:** [Open guide in browser](https://lyverance.github.io/Disable-Defender/defender_guide.html)
 
 1. **Method A — Scripts (recommended).** Fully automatic, with checks and rollback.
-2. **Method B — Manual.** The same [web guide](https://lyverance.github.io/Disable-Defender/defender_guide_ru.html), commands run manually. For those who don't run other people's scripts.
+2. **Method B — Manual.** The same [web guide](https://lyverance.github.io/Disable-Defender/defender_guide.html), commands run manually. For those who don't run other people's scripts.
 
 ---
 
