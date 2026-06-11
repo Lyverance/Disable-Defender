@@ -249,9 +249,10 @@ if (Test-Path $backupPath) {
             RecoverabilityToast = Get-TaskEnabled '\Microsoft\Windows\AccountHealth\'    'RecoverabilityToastTask'
         }
         SecurityCenter = @{
-            AntiVirusDisableNotify = Get-RegValue 'HKLM:\SOFTWARE\Microsoft\Security Center' 'AntiVirusDisableNotify'
-            AntiVirusOverride      = Get-RegValue 'HKLM:\SOFTWARE\Microsoft\Security Center' 'AntiVirusOverride'
-            ToastNotifyEnabled     = Get-RegValue 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Notifications\Settings\Windows.SystemToast.SecurityAndMaintenance' 'Enabled'
+            AntiVirusDisableNotify  = Get-RegValue 'HKLM:\SOFTWARE\Microsoft\Security Center' 'AntiVirusDisableNotify'
+            AntiVirusOverride       = Get-RegValue 'HKLM:\SOFTWARE\Microsoft\Security Center' 'AntiVirusOverride'
+            ToastNotifyEnabled      = Get-RegValue 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Notifications\Settings\Windows.SystemToast.SecurityAndMaintenance' 'Enabled'
+            ToastNotifyEnabledUser  = Get-RegValue 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Notifications\Settings\Windows.SystemToast.SecurityAndMaintenance' 'Enabled'
         }
         SmartScreen = @{
             PolicyValue   = Get-RegValue 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\System'         'EnableSmartScreen'
@@ -302,6 +303,7 @@ Invoke-RegStep '[2/4] Disabling Security Center' @(
     @{ Label = 'AntiVirusDisableNotify'; Cmd = { reg add "HKLM\SOFTWARE\Microsoft\Security Center" /v AntiVirusDisableNotify /t REG_DWORD /d 1 /f } },
     @{ Label = 'AntiVirusOverride';      Cmd = { reg add "HKLM\SOFTWARE\Microsoft\Security Center" /v AntiVirusOverride      /t REG_DWORD /d 1 /f } },
     @{ Label = 'Toast notifications';    Cmd = { reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Notifications\Settings\Windows.SystemToast.SecurityAndMaintenance" /v Enabled /t REG_DWORD /d 0 /f } },
+    @{ Label = 'Toast notifications (user)'; Cmd = { reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Notifications\Settings\Windows.SystemToast.SecurityAndMaintenance" /v Enabled /t REG_DWORD /d 0 /f } },
     @{ Label = 'HideSystray';            Cmd = { reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows Defender Security Center\Systray" /v HideSystray        /t REG_DWORD /d 1 /f } },
     @{ Label = 'DisableHealthCenter';    Cmd = { reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\HealthCenter"                    /v DisableHealthCenter /t REG_DWORD /d 1 /f } }
 )

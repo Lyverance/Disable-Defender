@@ -233,6 +233,7 @@ $stBackup = if ($backup) { $backup.Systray        } else { $null }
 $avDisableNotify = if ($scBackup) { $scBackup.AntiVirusDisableNotify } else { $null }
 $avOverride      = if ($scBackup) { $scBackup.AntiVirusOverride      } else { $null }
 $toastEnabled    = if ($scBackup) { $scBackup.ToastNotifyEnabled     } else { $null }
+$toastEnabledUser= if ($scBackup) { $scBackup.ToastNotifyEnabledUser } else { $null }
 $ssPolicy        = if ($ssBackup) { $ssBackup.PolicyValue            } else { $null }
 $ssExplorerVal   = if ($ssBackup) { $ssBackup.ExplorerValue          } else { $null }
 $webContentEval  = if ($ssBackup) { $ssBackup.AppHostValue           } else { $null }
@@ -242,6 +243,7 @@ $disableHealth   = if ($stBackup) { $stBackup.DisableHealthCenter    } else { $n
 Restore-Dword 'HKLM\SOFTWARE\Microsoft\Security Center' 'AntiVirusDisableNotify' $avDisableNotify
 Restore-Dword 'HKLM\SOFTWARE\Microsoft\Security Center' 'AntiVirusOverride'      $avOverride
 Restore-Dword 'HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Notifications\Settings\Windows.SystemToast.SecurityAndMaintenance' 'Enabled' $toastEnabled
+Restore-Dword 'HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Notifications\Settings\Windows.SystemToast.SecurityAndMaintenance' 'Enabled' $toastEnabledUser
 Restore-Dword 'HKLM\SOFTWARE\Policies\Microsoft\Windows\System'         'EnableSmartScreen'  $ssPolicy
 Restore-Sz    'HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer' 'SmartScreenEnabled' $ssExplorerVal
 Restore-Dword 'HKCU\Software\Microsoft\Windows\CurrentVersion\AppHost'  'EnableWebContentEvaluation' $webContentEval
