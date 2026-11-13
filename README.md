@@ -1,73 +1,96 @@
-English Version | [Russian Version](README_RU.md)
+<p align="center">
+  <img src="./assets/readme/hero.svg" width="100%" alt="Disable Microsoft Defender: a reversible Windows tool that preserves Defender files, shown next to the Defender.cmd menu">
+</p>
 
-# 🛡️ Clean Windows Defender Disable
+<p align="center">
+  English · <a href="README_RU.md">Русский</a> · <a href="https://lyverance.github.io/Disable-Defender/defender_guide.html">Manual web guide</a>
+</p>
 
-A native, safe, and fully reversible method to disable Windows Defender — without deleting files or third-party software.
+Disables Windows Defender without deleting it. The tool changes the registry (and, for SmartScreen, file permissions), needs no third-party software and can restore the saved state.
 
-Tested on **Windows 11 IoT Enterprise 25H2**. Should work on other Windows 10/11 editions, but has not been verified.
+Tested on **Windows 11 IoT Enterprise 25H2 and 26H2**. Other editions and Windows 10 are not verified.
 
-> ⚠️ **Disclaimer:** This project was developed for personal use and tested on my own system. You use these scripts at your own risk.
+> [!CAUTION]
+> Provided as is, without warranty. Use at your own risk.
 
----
+## Why not Defender Remover / Killer
 
-## ❓ Why Not Defender Remover / Killer and Similar Tools
+Those tools delete Defender components from `WinSxS`. Afterwards cumulative updates can fail with `0x800f081f`, `sfc /scannow` and `DISM` stop working or restore Defender broken, and the usual way back is reinstalling Windows. This tool deletes and replaces no Windows files, so Windows Update keeps working in the tested scenarios, and Restore reverts the changes from the saved backup.
 
-These utilities physically delete Defender components from `WinSxS`. Consequences:
+## Quick start
 
-- Cumulative updates fail with error `0x800f081f` — Windows cannot find files during integrity checks
-- `sfc /scannow` and `DISM` either don't work or restore Defender in a broken state
-- Backup-based rollback is unreliable — on failure, reinstallation is the only option
+Extract the entire archive and keep its folder structure intact: the `.internal` folder next to `Defender.cmd` holds the scripts and the backup that Restore uses. Double-click `Defender.cmd`; it requests administrator rights itself and opens a menu.
 
-This method does not touch a single file — registry only. Updates work normally, rollback takes one script run.
+<p align="center">
+  <img src="./assets/readme/workflow.svg" width="100%" alt="Disabling in three stages: normal mode (pick Disable and confirm, the PC reboots into Safe Mode), one Safe Mode boot (the console opens by itself and disables services), then normal mode again with Defender off">
+</p>
 
----
+### Disable
 
-## 📖 Two Ways to Use
+1. Pick "Disable Windows Defender" and confirm. The PC reboots into Safe Mode.
+2. Sign in with your account password.
+3. A console window opens automatically, disables the services and returns the PC to normal mode.
 
-ℹ️ **Interactive web guide:** [Open guide in browser](https://lyverance.github.io/Disable-Defender/defender_guide.html)
+> [!IMPORTANT]
+> PIN and Windows Hello are not available in Safe Mode, so you need your account password. Safe Mode is used for this one boot only: if you cannot sign in, restart from the sign-in screen. Windows starts normally, the disabling is not finished, and you can run Disable again once you have the password.
 
-1. **Method A — Scripts (recommended).** Fully automatic, with checks and rollback.
-2. **Method B — Manual.** The same [web guide](https://lyverance.github.io/Disable-Defender/defender_guide.html), commands run manually. For those who don't run other people's scripts.
+> [!NOTE]
+> Tamper Protection can stay on: Safe Mode finishes anything it blocks.
 
----
+### Check
 
-## ⚙️ Instructions (Method A)
+Pick "Check protection status" for a report on the Defender components.
 
-### Disabling
+### Restore
 
-**Step 0 — required manual step**
-Disable Tamper Protection manually:
-*Settings ➔ Privacy & Security ➔ Windows Security ➔ Virus & threat protection ➔ Manage settings ➔ Tamper Protection ➔ Off*
+Pick "Restore Windows Defender" and confirm. The state saved in the backup is restored and the PC reboots. A backup made under another Windows account does not restore that account's own settings, and a backup from another installation is rejected. Without a usable backup, built-in defaults are used (see "Backup and restoration" below).
 
-**Step 1 — normal mode**
-Double-click `Disable-Defender.cmd`. The script will request elevated rights via UAC, perform preparation, and reboot the PC into Safe Mode.
+### After Windows updates
 
-**Step 2 — Safe Mode**
-The console will open automatically. The script will disable services and return the system to normal mode. No manual actions required.
+An update can undo parts of the setup: for example, Windows may take back ownership of `smartscreen.exe` or add a new Defender service. After any Windows update, run "Check protection status". If it reports a problem, run Disable again: it fixes what changed and keeps your first backup.
 
-### Restoration
+### Prefer not to run scripts?
 
-Double-click `Restore-Defender.cmd`. The script will restore the original system state and reboot the PC. Afterwards, re-enable Tamper Protection.
+The [manual web guide](https://lyverance.github.io/Disable-Defender/defender_guide.html) shows how to disable and restore Defender with commands you run yourself. Without the script's backup, manual restore returns default values, which may differ from your original settings.
 
-### Status Check
-
-Double-click `Check-Status.cmd` — a report on the status of all Defender components will open.
-
-> ℹ️ **Major Windows updates (Feature Updates)** may restore Defender to its original state. After such an update, run `Check-Status.cmd` and repeat the disable process if necessary. Regular cumulative updates (Cumulative Updates) are not affected.
-
----
-
-## 📋 What the Script Disables
+## What it disables
 
 | Component | Details |
 |---|---|
-| **Defender Core** | WinDefend, WdFilter, WdBoot, WdNisSvc, WdNisDrv |
+| **Defender Core** | WinDefend, WdFilter, MDCoreSvc, WdBoot, WdNisSvc, WdNisDrv |
 | **Telemetry** | Sense, webthreatdefsvc, webthreatdefusersvc |
-| **Security Center** | wscsvc (Windows Security Center) |
-| **Scheduler** | 5 Defender maintenance tasks |
-| **Context Menu** | EPP ("Scan with Microsoft Defender" entry) |
-| **SmartScreen** | Registry + smartscreen.exe block |
+| **Scheduler** | 4 Defender maintenance tasks and `RecoverabilityToastTask` |
+| **Context menu** | "Scan with Microsoft Defender" |
+| **SmartScreen** | Registry + `smartscreen.exe` block |
 | **Notifications** | Security Center, HealthCenter |
+| **Downloaded-file warning** | Not Defender: removes the "Open File - Security Warning" prompt for the current Windows account |
 
----
-If this was useful, consider leaving a ⭐
+## Details
+
+<details>
+<summary><b>Backup and restoration</b></summary>
+
+<br>
+
+Keep `.internal/defender-backup.json` with the scripts: a repeat run preserves the first backup.
+
+If the backup is missing or invalid, Restore can only apply built-in Windows defaults, not your original settings. It warns you and, for an invalid backup, asks for confirmation first.
+
+</details>
+
+<details>
+<summary><b>Automation: switches and exit codes</b></summary>
+
+<br>
+
+`Defender.cmd` takes switches for scripted use:
+
+- `/Status`, `/Disable`, `/Restore` pick the action (default: menu).
+- `/Unattended` skips every prompt and takes the safe default (a detected third-party antivirus is declined, exit code `2`).
+- `/AllowReboot` is required with `/Unattended` for `/Disable` and `/Restore`, since both reboot the PC; without it they are rejected before anything changes.
+
+Exit codes: `0` completed (or an optional prompt was declined); `1` failed or found a problem; `2` rejected before any change.
+
+Exit code `0` alone does not prove a restore: with `/Restore /Unattended`, no usable backup and active protection found, the script declines to apply defaults and still returns `0`. Without `/Unattended`, a launch without administrator rights starts an elevated copy and exits at once, so its exit code is not the result of the run.
+
+</details>

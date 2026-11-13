@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="404" viewBox="0 0 1200 404" role="img" aria-labelledby="t d">
+  <title id="t">Отключение Microsoft Defender</title>
+  <desc id="d">Обратимый инструмент Windows, сохраняющий файлы Defender. Right: the Defender.cmd menu with Check protection status, Disable, Restore and Exit.</desc>
+  <rect x="1" y="1" width="1198" height="402" rx="25" fill="#13141a" stroke="#2a2b35" stroke-width="2"/>
+  <g id="title-block" font-family="'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif">
+    <text x="56" y="112" font-family="ui-monospace, 'Cascadia Mono', Consolas, 'SFMono-Regular', Menlo, monospace" font-size="20" letter-spacing="1" fill="#5aa9e6">БЕЗ УДАЛЕНИЯ ФАЙЛОВ</text>
+    <text x="56" y="182" font-size="56" font-weight="700" fill="#e4e4ea">Отключение</text>
+    <text x="56" y="246" font-size="56" font-weight="700" fill="#e4e4ea">Microsoft Defender</text>
+    <text x="56" y="306" font-size="24" fill="#a2a2ae">Обратимый инструмент Windows,</text>
+    <text x="56" y="340" font-size="24" fill="#a2a2ae">сохраняющий файлы Defender.</text>
+    <text x="56" y="374" font-size="24" fill="#3ddc97">Откат — одним запуском.</text>
+  </g>
+  <g id="console" font-family="ui-monospace, 'Cascadia Mono', Consolas, 'SFMono-Regular', Menlo, monospace" font-size="22">
+    <rect x="640" y="40" width="504" height="324" rx="14" fill="#0f1015" stroke="#2a2b35" stroke-width="2"/>
+    <path d="M640 54a14 14 0 0 1 14-14h476a14 14 0 0 1 14 14v34H640z" fill="#20212b"/>
+    <text x="668" y="71" font-size="18" fill="#a2a2ae">Defender.cmd</text>
+    <text x="672" y="134" font-weight="700" fill="#e4e4ea">Disable Defender</text>
+    <rect x="672" y="148" width="440" height="2" fill="#2a2b35"/>
+    <text x="672" y="188" fill="#d7d8de">1) Check protection status</text>
+    <text x="672" y="222" fill="#d7d8de">2) Disable Windows Defender</text>
+    <text x="672" y="256" fill="#d7d8de">3) Restore Windows Defender</text>
+    <text x="672" y="290" fill="#d7d8de">0) Exit</text>
+    <text x="672" y="338" fill="#a2a2ae">Choice: <tspan fill="#3ddc97">2</tspan></text>
+    <rect x="802" y="320" width="12" height="24" fill="#5aa9e6"/>
+  </g>
+</svg>

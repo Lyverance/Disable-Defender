@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="300" viewBox="0 0 1200 300" role="img" aria-labelledby="t d">
+  <title id="t">How disabling works</title>
+  <desc id="d">Three stages: normal mode, one Safe Mode boot, back to normal Windows.</desc>
+  <rect x="1" y="1" width="1198" height="298" rx="25" fill="#13141a" stroke="#2a2b35" stroke-width="2"/>
+  <g font-family="'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif">
+    <rect x="48" y="40" width="330" height="220" rx="14" fill="#132233" stroke="#5aa9e6" stroke-opacity=".5" stroke-width="2"/>
+    <text x="72" y="86" font-size="26" font-weight="700" fill="#e4e4ea">1 · Normal mode</text>
+    <text x="72" y="156" font-size="22" fill="#d7d8de">Pick Disable, confirm.</text>
+    <text x="72" y="190" font-size="22" fill="#d7d8de">Script prepares and</text>
+    <text x="72" y="224" font-size="22" fill="#d7d8de">reboots into Safe Mode.</text>
+    <path d="M390 130l30 0m-12 -14l14 14l-14 14" fill="none" stroke="#a2a2ae" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="433" y="40" width="330" height="220" rx="14" fill="#2a1716" stroke="#f0726a" stroke-opacity=".5" stroke-width="2"/>
+    <text x="457" y="86" font-size="26" font-weight="700" fill="#e4e4ea">2 · Safe Mode</text>
+    <text x="457" y="114" font-family="ui-monospace, 'Cascadia Mono', Consolas, 'SFMono-Regular', Menlo, monospace" font-size="20" fill="#f0726a">one boot only</text>
+    <text x="457" y="156" font-size="22" fill="#d7d8de">Console opens automatically.</text>
+    <text x="457" y="190" font-size="22" fill="#d7d8de">Services get disabled,</text>
+    <text x="457" y="224" font-size="22" fill="#d7d8de">then back to normal.</text>
+    <path d="M775 130l30 0m-12 -14l14 14l-14 14" fill="none" stroke="#a2a2ae" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="818" y="40" width="330" height="220" rx="14" fill="#12271f" stroke="#3ddc97" stroke-opacity=".5" stroke-width="2"/>
+    <text x="842" y="86" font-size="26" font-weight="700" fill="#e4e4ea">3 · Normal mode</text>
+    <text x="842" y="156" font-size="22" fill="#d7d8de">Defender stays off.</text>
+    <text x="842" y="190" font-size="22" fill="#d7d8de">Run Check protection</text>
+    <text x="842" y="224" font-size="22" fill="#d7d8de">status after updates.</text>
+  </g>
+</svg>

@@ -6,3 +6,11 @@ desktop.ini
 # Editors
 .vscode/
 .cursor/
+
+# Local rollback data includes installation and user identifiers.
+Disable-Defender/.internal/defender-backup.json
+Disable-Defender/.internal/defender-backup.json.*.tmp
+
+# run.lock (run-lock.ps1) no longer lives under the repo folder -- Get-RunLockPath
+# points it at a fixed %ProgramData% path shared by every copy of the tool, so there
+# is nothing here to ignore.

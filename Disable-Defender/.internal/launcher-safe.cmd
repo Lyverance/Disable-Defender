@@ -4,13 +4,17 @@ cls
 cd /d "%~dp0"
 title Defender Disable - Step 2 (Safe Mode)
 
-:: ── Clear Safe Mode flag immediately ──────────────────────────────────────
-:: Done HERE, before stage-safe runs, so a crash or power loss mid-script
-:: does not leave Windows stuck booting into Safe Mode forever.
-:: If the flag is already gone (repeat run), bcdedit exits non-zero -- ignore it.
-bcdedit /deletevalue "{current}" safeboot >nul 2>&1
+:: Safe Mode was reached through a one-shot boot entry (safe-mode-entry.ps1), so
+:: the next boot is normal Windows whatever happens in this stage; stage-safe.ps1
+:: removes the entry itself.
 
-powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0stage-safe.ps1"
+:: stage-normal.ps1 appends /Unattended to the RunOnce command of an unattended
+:: Disable run; forward it so this stage never waits for a key either.
+set "UNATTENDED_ARG="
+echo %*| find /i "/Unattended" >nul
+if not errorlevel 1 set "UNATTENDED_ARG=-Unattended"
+
+powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0stage-safe.ps1" %UNATTENDED_ARG%
 
 :: errorLevel is volatile -- any subsequent command overwrites it, so save it immediately.
 :: stage-safe.ps1 handles its own reboot; we only pause if PS exits with an error
@@ -20,5 +24,5 @@ if "%PS_EXIT%" neq "0" (
     echo.
     echo  [launcher-safe] stage-safe.ps1 exited with code %PS_EXIT%
     echo.
-    pause
+    if not defined UNATTENDED_ARG pause
 )

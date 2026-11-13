@@ -1,10 +1,12 @@
-param(
+﻿param(
     [Parameter(Mandatory=$true)]
-    [ValidateSet('take','restore')]
-    [string]$Action
+    [ValidateSet('take','restore','restore-file')]
+    [string]$Action,
+    [switch]$UseDefaults
 )
 
 $ErrorActionPreference = 'Stop'
+if ($UseDefaults -and $Action -ne 'restore') { throw 'UseDefaults is only valid for registry restoration.' }
 
 $cSharpCode = @'
 using System;
@@ -95,20 +97,47 @@ try {
     exit 2
 }
 
+$securityBackup = $null
+if (-not $UseDefaults) {
+    . (Join-Path $PSScriptRoot 'backup-state.ps1')
+    $backupPath = Join-Path $PSScriptRoot 'defender-backup.json'
+    if (Test-Path -LiteralPath $backupPath) {
+        try { $securityBackup = Read-BackupState $backupPath -AllowOtherUser } catch { Write-Error $_; exit 1 }
+    }
+}
+if ($Action -eq 'restore-file') {
+    try {
+        if ($null -eq $securityBackup -or $securityBackup.SchemaVersion -lt 4) { throw 'No exact file security snapshot available.' }
+        $descriptor = $securityBackup.SecurityState.SmartScreen
+        if ($null -ne $descriptor) {
+            Restore-FileSecurity (Join-Path $env:SystemRoot 'System32\smartscreen.exe') $descriptor
+        } elseif (Test-Path -LiteralPath (Join-Path $env:SystemRoot 'System32\smartscreen.exe')) {
+            throw 'SmartScreen appeared after the backup; its original security is unknown.'
+        }
+        exit 0
+    } catch { Write-Error $_; exit 1 }
+}
+
 $sidAdmins = [System.Security.Principal.SecurityIdentifier]::new('S-1-5-32-544')
 $sidSystem  = [System.Security.Principal.SecurityIdentifier]::new('S-1-5-18')
 
-# Must match $serviceNames in stage-safe.ps1 exactly.
+# Every service this tool ever writes a Start value for, on either path:
+# stage-safe.ps1's active disable list (excluding wscsvc)
+# and restore-from-backup.ps1's $defenderServiceNames, which still restores
+# wscsvc for backups an older version of this tool made while it did disable
+# it. Ownership must be taken here for both, so this list stays the union of
+# the two, not just a mirror of stage-safe.ps1's.
 $serviceNames = @(
     'WinDefend'
     'WdFilter'
+    'MDCoreSvc'
     'WdBoot'
     'WdNisSvc'
     'WdNisDrv'
     'Sense'
     'webthreatdefsvc'
     'webthreatdefusersvc'
-    'wscsvc'              # Windows Security Center -- must match stage-safe.ps1 $serviceNames
+    'wscsvc'              # Windows Security Center -- kept for restoring older backups, see above
 )
 
 # Target ALL concrete ControlSets (001, 002, etc.) plus the alias.
@@ -139,6 +168,41 @@ foreach ($subkeyPath in $allKeyPaths) {
     $ownershipKey   = $null
     $permissionsKey = $null
     try {
+        if ($null -ne $securityBackup -and $securityBackup.SchemaVersion -ge 4) {
+            # CurrentControlSet may resolve to a different concrete set after reboot.
+            $concretePath = $subkeyPath
+            if ($subkeyPath.StartsWith('SYSTEM\CurrentControlSet\')) {
+                $current = (Get-ItemProperty -LiteralPath 'HKLM:\SYSTEM\Select' -Name Current -ErrorAction Stop).Current
+                $concretePath = $subkeyPath.Replace('CurrentControlSet', ('ControlSet{0:D3}' -f $current))
+            }
+            $descriptor = $securityBackup.SecurityState.Registry.$concretePath
+            if ($null -eq $descriptor) {
+                # Absent when the backup was taken, present now: installed later (a Windows
+                # or platform update). Neither Disable nor Restore touches it, so there is
+                # nothing to roll back and no original state to return it to.
+                $probe = [Microsoft.Win32.Registry]::LocalMachine.OpenSubKey($subkeyPath)
+                if ($null -eq $probe) { continue }
+                $probe.Dispose()
+                Write-Warning "${subkeyPath}: installed after the backup, left as found."
+                continue
+            }
+        }
+        if ($Action -eq 'restore' -and $null -ne $securityBackup -and $securityBackup.SchemaVersion -ge 4) {
+            # The alias and its concrete ControlSet address the same key. Once the
+            # original ACL is back, it may intentionally deny another WRITE_DAC open.
+            $probe = [Microsoft.Win32.Registry]::LocalMachine.OpenSubKey($subkeyPath)
+            if ($null -eq $probe) { throw "Registry key disappeared: $subkeyPath" }
+            try {
+                $currentDescriptor = $probe.GetAccessControl($script:SecuritySections).GetSecurityDescriptorSddlForm($script:SecuritySections)
+            } finally { $probe.Dispose() }
+            if ((Get-ComparableSecurityDescriptor $currentDescriptor) -ceq (Get-ComparableSecurityDescriptor $descriptor)) { continue }
+            $permissionsKey = [Microsoft.Win32.Registry]::LocalMachine.OpenSubKey(
+                $subkeyPath, [Microsoft.Win32.RegistryKeyPermissionCheck]::ReadWriteSubTree,
+                [System.Security.AccessControl.RegistryRights]'ChangePermissions, TakeOwnership')
+            if ($null -eq $permissionsKey) { throw "Registry key disappeared: $subkeyPath" }
+            Restore-RegistrySecurity $permissionsKey $descriptor
+            continue
+        }
         $ownershipKey = [Microsoft.Win32.Registry]::LocalMachine.OpenSubKey(
             $subkeyPath,
             [Microsoft.Win32.RegistryKeyPermissionCheck]::ReadWriteSubTree,
@@ -170,6 +234,7 @@ foreach ($subkeyPath in $allKeyPaths) {
             $permissionsKey.SetAccessControl($permissionsAcl)
         }
     } catch {
+        Write-Warning "${subkeyPath}: $_"
         $anyFailed = $true
     } finally {
         if ($null -ne $permissionsKey) { $permissionsKey.Close() }
