@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./assets/readme/hero-ru.svg" width="100%" alt="Отключение Microsoft Defender: обратимый инструмент Windows, сохраняющий файлы Defender; справа меню Defender.cmd">
+  <img src="./assets/readme/hero-ru.svg" width="100%" alt="Отключение Microsoft Defender: обратимо и без удаления файлов; справа меню Defender.cmd">
 </p>
 
 <p align="center">

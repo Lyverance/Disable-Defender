@@ -1,13 +1,13 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="404" viewBox="0 0 1200 404" role="img" aria-labelledby="t d">
   <title id="t">Disable Microsoft Defender</title>
-  <desc id="d">A reversible Windows tool that preserves Defender files. Right: the Defender.cmd menu with Check protection status, Disable, Restore and Exit.</desc>
+  <desc id="d">Turns off Windows Defender reversibly, without deleting files. Right: the Defender.cmd menu with Check protection status, Disable, Restore and Exit.</desc>
   <rect x="1" y="1" width="1198" height="402" rx="25" fill="#13141a" stroke="#2a2b35" stroke-width="2"/>
   <g id="title-block" font-family="'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif">
     <text x="56" y="112" font-family="ui-monospace, 'Cascadia Mono', Consolas, 'SFMono-Regular', Menlo, monospace" font-size="20" letter-spacing="1" fill="#5aa9e6">NO FILES DELETED</text>
     <text x="56" y="182" font-size="56" font-weight="700" fill="#e4e4ea">Disable Microsoft</text>
     <text x="56" y="246" font-size="56" font-weight="700" fill="#e4e4ea">Defender</text>
-    <text x="56" y="306" font-size="24" fill="#a2a2ae">A reversible Windows tool</text>
-    <text x="56" y="340" font-size="24" fill="#a2a2ae">that preserves Defender files.</text>
+    <text x="56" y="306" font-size="24" fill="#a2a2ae">Turns off Windows Defender,</text>
+    <text x="56" y="340" font-size="24" fill="#a2a2ae">reversibly, without deleting files.</text>
     <text x="56" y="374" font-size="24" fill="#3ddc97">One script run rolls it back.</text>
   </g>
   <g id="console" font-family="ui-monospace, 'Cascadia Mono', Consolas, 'SFMono-Regular', Menlo, monospace" font-size="22">

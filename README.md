@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./assets/readme/hero.svg" width="100%" alt="Disable Microsoft Defender: a reversible Windows tool that preserves Defender files, shown next to the Defender.cmd menu">
+  <img src="./assets/readme/hero.svg" width="100%" alt="Disable Microsoft Defender: turns off Windows Defender reversibly, without deleting files, shown next to the Defender.cmd menu">
 </p>
 
 <p align="center">
