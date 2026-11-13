@@ -14,7 +14,7 @@ set "UNATTENDED_ARG="
 echo %*| find /i "/Unattended" >nul
 if not errorlevel 1 set "UNATTENDED_ARG=-Unattended"
 
-powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0stage-safe.ps1" %UNATTENDED_ARG%
+"%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -ExecutionPolicy Bypass -File "%~dp0stage-safe.ps1" %UNATTENDED_ARG%
 
 :: errorLevel is volatile -- any subsequent command overwrites it, so save it immediately.
 :: stage-safe.ps1 handles its own reboot; we only pause if PS exits with an error

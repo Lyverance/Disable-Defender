@@ -7,6 +7,25 @@ param(
 )
 
 $ErrorActionPreference = 'Stop'
+
+# bcdedit.exe and other System32 tools exist only for a native (64-bit) process: a
+# 32-bit PowerShell on 64-bit Windows sees System32 as SysWOW64 and cannot find them.
+# Sysnative bypasses that redirection, so continue in a native PowerShell with the
+# same arguments. PSHOME is now the native directory; putting it first on PATH makes the
+# bare powershell.exe child calls native too, even when PATH lists SysWOW64 earlier.
+if (-not [Environment]::Is64BitProcess -and [Environment]::Is64BitOperatingSystem) {
+    $nativePowerShell = Join-Path $env:SystemRoot 'Sysnative\WindowsPowerShell\v1.0\powershell.exe'
+    if (-not (Test-Path -LiteralPath $nativePowerShell)) {
+        Write-Host ''
+        Write-Host "  [ERROR] This is a 32-bit PowerShell and the 64-bit one was not found: $nativePowerShell" -ForegroundColor Red
+        Write-Host '  Run Defender.cmd from a normal (64-bit) Command Prompt or double-click it.' -ForegroundColor DarkGray
+        Write-Host ''
+        exit 1
+    }
+    & $nativePowerShell -NoProfile -ExecutionPolicy Bypass -File $PSCommandPath @Arguments
+    exit $LASTEXITCODE
+}
+$env:Path = "$PSHOME;$env:Path"
 . (Join-Path $PSScriptRoot 'console-ui.ps1')
 
 function Write-UsageError {
