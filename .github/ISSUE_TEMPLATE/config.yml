@@ -1,5 +1,0 @@
-blank_issues_enabled: true
-contact_links:
-  - name: Manual guide (no scripts)
-    url: https://lyverance.github.io/Disable-Defender/defender_guide.html
-    about: Disable and restore Defender with commands you run yourself.
