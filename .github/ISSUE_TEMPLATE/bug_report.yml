@@ -1,0 +1,51 @@
+name: Bug report
+description: Disable, Restore or Check failed, or Defender is not in the expected state
+labels: [bug]
+body:
+  - type: input
+    id: windows
+    attributes:
+      label: Windows edition and build
+      description: "Run `winver` or `(Get-ComputerInfo).OsName, (Get-ComputerInfo).OsBuildNumber`."
+      placeholder: Windows 11 Pro 25H2, build 26200.xxxx
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Tool version
+      description: The release you downloaded (for example v3.0).
+    validations:
+      required: true
+  - type: dropdown
+    id: action
+    attributes:
+      label: What were you doing?
+      options:
+        - Disable
+        - Restore
+        - Check protection status
+        - After a Windows update
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened and what did you expect?
+      description: Include the exact error text and the exit code if you used switches.
+    validations:
+      required: true
+  - type: textarea
+    id: status
+    attributes:
+      label: Output of "Check protection status"
+      description: Paste the report if Defender is in an unexpected state.
+      render: text
+  - type: checkboxes
+    id: extras
+    attributes:
+      label: Environment
+      options:
+        - label: A third-party antivirus is installed
+        - label: The PC is managed (domain, Intune, group policy)
